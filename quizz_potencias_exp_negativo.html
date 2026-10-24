@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jogo — Descobre a Potência Equivalente</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Ubuntu,sans-serif;margin:0;background:linear-gradient(#fff,#f8fafc);color:#0f172a}
+  .wrap{max-width:980px;margin:0 auto;padding:24px}
+  h1{text-align:center;margin-bottom:10px;font-size:clamp(22px,3vw,32px)}
+  p{text-align:center;color:#475569;margin-bottom:16px}
+  .card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 2px 6px rgba(0,0,0,.05);padding:18px}
+  .toprow{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .btn{border:0;border-radius:10px;padding:8px 12px;font-weight:600;background:#2563eb;color:#fff;cursor:pointer}
+  .btn.ghost{background:#e5e7eb;color:#111}
+  .stats{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .badge{border-radius:999px;padding:6px 10px;font-weight:700;font-size:13px}
+  .ok{background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0}
+  .warn{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+  .err{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+  .board{display:grid;grid-template-columns:1fr 60px 1fr;gap:12px;align-items:center;margin-top:14px}
+  .tile{border:2px solid #dbeafe;border-radius:12px;min-height:140px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:12px;background:#f8fafc;transition:transform .6s ease, background .6s ease}
+  .eq{font-size:28px;text-align:center}
+  .mono{font-family:ui-monospace,monospace}
+  .big{font-size:22px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .choice{border:2px solid #e5e7eb;border-radius:12px;padding:10px;cursor:pointer;background:#fff;text-align:center}
+  .choice:hover{border-color:#2563eb;box-shadow:0 2px 8px rgba(37,99,235,.15)}
+  .choice.correct{border-color:#10b981;background:#ecfdf5}
+  .choice.wrong{border-color:#ef4444;background:#fee2e2}
+  .note{text-align:center;margin-top:10px;color:#334155;font-size:15px;min-height:24px}
+  .hr{height:1px;background:#e2e8f0;margin:14px 0}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+  .input{border:1px solid #cbd5e1;border-radius:10px;padding:6px 10px;width:140px;text-align:center}
+  .flip{animation:flip 0.7s ease}
+  @keyframes flip{0%{transform:rotateX(0);}50%{transform:rotateX(90deg);}100%{transform:rotateX(0);}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Jogo — Descobre a potência equivalente</h1>
+    <p>Lembra-te: inverter a base e trocar o sinal do expoente.</p>
+
+    <div class="card">
+      <div class="toprow">
+        <div class="stats">
+          <span class="badge ok" id="score">Acertos: 0</span>
+          <span class="badge warn" id="round">Ronda: 1/20</span>
+          <span class="badge" id="tempo">Tempo: 0s</span>
+        </div>
+        <div class="row">
+          <button class="btn" id="new">Nova questão</button>
+          <button class="btn ghost" id="dica">Mostrar dica</button>
+          <button class="btn ghost" id="revelar">Revelar solução</button>
+        </div>
+      </div>
+
+      <div class="board">
+        <div class="tile" id="left">
+          <div class="mono big" id="lexp">(a/b)<sup>n</sup></div>
+          <div class="mono" id="lval">—</div>
+        </div>
+        <div class="eq">=</div>
+        <div class="tile" id="right">
+          <div class="mono big" id="rexp">???</div>
+          <div class="mono" id="rval">—</div>
+        </div>
+      </div>
+
+      <div class="choices" id="choices"></div>
+
+      <div class="hr"></div>
+      <div class="row">
+        <span class="mono">Valor numérico (opcional):</span>
+        <input class="input" id="guessNum" placeholder="ex: 27/8"/>
+        <button class="btn ghost" id="verificarNum">Verificar valor</button>
+      </div>
+
+      <div class="note" id="note"></div>
+    </div>
+  </div>
+
+<script>
+  const byId = (id)=>document.getElementById(id);
+  function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+  function simp(n,d){const g=gcd(n,d);n/=g;d/=g;if(d<0){n=-n;d=-d;}return [n,d];}
+  function powFrac(num,den,exp){const e=Math.abs(exp);let N=1,D=1;for(let i=0;i<e;i++){N*=num;D*=den;}if(exp<0)[N,D]=[D,N];return simp(N,D);} 
+  function fracToStr(n,d){return d===1? String(n) : `${n}/${d}`;}
+
+  let score=0, round=1, maxRounds=15;
+  let A=2,B=3,N=2;
+  let startTime;
+
+  const elScore=byId('score');
+  const elRound=byId('round');
+  const elTempo=byId('tempo');
+  const lExp=byId('lexp'), lVal=byId('lval');
+  const rExp=byId('rexp'), rVal=byId('rval');
+  const choices=byId('choices');
+  const note=byId('note');
+  const btnNew=byId('new'), btnDica=byId('dica'), btnRevelar=byId('revelar');
+  const guessNum=byId('guessNum'), btnVerificarNum=byId('verificarNum');
+  const left=byId('left'), right=byId('right');
+
+  function randInt(lo,hi){return Math.floor(Math.random()*(hi-lo+1))+lo;}
+  function newQuestion(){
+    do { A = randInt(-9,9); } while(A===0);
+    do { B = randInt(-9,9); } while(B===0);
+    N = randInt(-5,5); if(N===0) N = 2;
+
+    lExp.innerHTML = `(${A}/${B})<sup>${N}</sup>`; 
+    const [ln,ld] = powFrac(A,B,N);
+    lVal.textContent = fracToStr(ln,ld);
+
+    rExp.textContent = '???';
+    rVal.textContent = '—';
+    left.classList.add('flip'); right.classList.add('flip'); setTimeout(()=>{left.classList.remove('flip'); right.classList.remove('flip');},700);
+
+    const correct = `(${B}/${A})<sup>${-N}</sup>`;   // ✅ inverter base + trocar sinal
+
+    const distractors = new Set();
+    distractors.add(`(${A}/${B})<sup>${-N}</sup>`);
+    distractors.add(`(${B}/${A})<sup>${N}</sup>`);
+    distractors.add(`(${A}/${B})<sup>${N}</sup>`);
+    const opts = [correct, ...[...distractors].slice(0,3)];
+    for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]];}
+
+    choices.innerHTML='';
+    opts.forEach(expr=>{
+      const div=document.createElement('button');
+      div.className='choice';
+      div.innerHTML = `<span class="mono big">${expr}</span>`;
+      div.onclick=()=> checkChoice(expr, correct);
+      choices.appendChild(div);
+    });
+
+    note.textContent = 'Regra: inverter a base e trocar o sinal do expoente.';
+    guessNum.value='';
+    elRound.textContent = `Ronda: ${round}/${maxRounds}`;
+    if(round===1) startTime=Date.now();
+  }
+
+  function checkChoice(expr, correct){
+    const nodes = Array.from(choices.children);
+    nodes.forEach(n=>n.disabled=true);
+    const isCorrect = expr===correct;
+    nodes.forEach(n=>{
+      if(n.innerHTML.includes(correct)) n.classList.add('correct');
+      if(n.innerHTML.includes(expr) && !isCorrect) n.classList.add('wrong');
+    });
+
+    const [rn,rd] = powFrac(B,A,-N);
+    rExp.innerHTML = correct;
+    rVal.textContent = fracToStr(rn,rd);
+
+    if(isCorrect){
+      score++; elScore.textContent = `Acertos: ${score}`;
+      note.innerHTML = `<span class='ok badge'>✔ Certo!</span>`;
+    } else {
+      note.innerHTML = `<span class='err badge'>✘ Observa</span> Falta inverter a base e/ou trocar o sinal.`;
+    }
+
+    setTimeout(()=>{
+      round++;
+      if(round>maxRounds){ endGame(); }
+      else { newQuestion(); }
+    }, 1200);
+  }
+
+  function endGame(){
+    const elapsed = Math.floor((Date.now()-startTime)/1000);
+    choices.innerHTML='';
+    note.innerHTML = `<b>Fim!</b> Pontuação: <b>${score}</b> em ${maxRounds}.<br>Tempo: <b>${elapsed}s</b>.`;
+    elTempo.textContent = `Tempo: ${elapsed}s`;
+    round=1; score=0; elScore.textContent='Acertos: 0'; elRound.textContent=`Ronda: 1/${maxRounds}`;
+  }
+
+  btnNew.addEventListener('click',()=>{ if(round>maxRounds){ score=0; round=1; elScore.textContent='Acertos: 0'; } newQuestion(); });
+  btnDica.addEventListener('click',()=>{ note.innerHTML = `💡 <b>Dica:</b> (a/b)^n → (b/a)^{-n}.`; });
+  btnRevelar.addEventListener('click',()=>{
+    const correct = `(${B}/${A})<sup>${-N}</sup>`;
+    rExp.innerHTML = correct;
+    const [rn,rd] = powFrac(B,A,-N);
+    rVal.textContent = fracToStr(rn,rd);
+  });
+
+  btnVerificarNum.addEventListener('click',()=>{
+    const txt = guessNum.value.trim();
+    if(!txt){ note.textContent='Escreve um valor (ex: 9/4).'; return; }
+    let num,den;
+    if(txt.includes('/')){ const [p,q] = txt.split('/'); num = parseInt(p,10); den = parseInt(q,10); }
+    else { num = parseInt(txt,10); den = 1; }
+    if(Number.isNaN(num) || Number.isNaN(den) || den===0){ note.textContent='Formato inválido.'; return; }
+    const [ln,ld] = powFrac(A,B,N);
+    const [sn,sd] = simp(num,den);
+    const ok = (ln===sn && ld===sd);
+    note.innerHTML = ok ? `<span class='ok badge'>✔ Valor correto</span>` : `<span class='err badge'>✘ Diferente</span>`;
+  });
+
+  newQuestion();
+</script>
+</body>
+</html>
+
