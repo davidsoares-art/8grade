@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Potências com Expoente Negativo — 8.º Ano</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#db2777 100%);
+  min-height:100vh;padding:20px 14px 40px;color:#1e293b}
+h1{text-align:center;color:#fff;font-size:clamp(17px,4vw,26px);
+  margin-bottom:3px;text-shadow:0 2px 6px rgba(0,0,0,.35);font-weight:800}
+.sub{text-align:center;color:rgba(255,255,255,.82);font-size:13px;margin-bottom:12px}
+.wrap{max-width:740px;margin:0 auto}
+
+/* tabs de nível */
+.tabs{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
+.tab{border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);
+  color:#fff;border-radius:50px;padding:7px 24px;font-size:14px;font-weight:700;
+  cursor:pointer;transition:.2s}
+.tab:hover:not(.active){background:rgba(255,255,255,.3)}
+.tab.active{background:#fff;color:#4f46e5;border-color:#fff}
+.tab-desc{text-align:center;font-size:12px;color:rgba(255,255,255,.72);margin-bottom:10px}
+
+/* card principal */
+.card{background:#fff;border-radius:20px;padding:18px 18px 22px;
+  box-shadow:0 20px 60px rgba(0,0,0,.28);margin-bottom:11px}
+
+/* barra de estatísticas */
+.stats{display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.badge{border-radius:50px;padding:4px 11px;font-size:12px;font-weight:700}
+.bg-g{background:#dcfce7;color:#166534}
+.bg-b{background:#dbeafe;color:#1d4ed8}
+.bg-a{background:#fef3c7;color:#92400e}
+.bg-p{background:#f3e8ff;color:#6d28d9}
+
+/* barra de progresso */
+.bar{height:7px;background:#f1f5f9;border-radius:99px;margin-bottom:18px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#4f46e5,#db2777);
+  border-radius:99px;transition:width .4s ease}
+
+/* área da questão */
+.q-area{background:linear-gradient(135deg,#f8f7ff,#fdf4ff);
+  border:2px solid #ddd6fe;border-radius:16px;padding:22px 14px;
+  text-align:center;min-height:110px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:5px;margin-bottom:14px}
+.q-label{font-size:11px;color:#6d28d9;font-weight:700;
+  text-transform:uppercase;letter-spacing:.07em}
+.q-expr{font-size:clamp(26px,5vw,38px);line-height:2}
+.q-prompt{font-size:12.5px;color:#64748b;margin-top:2px}
+
+/* math: frações e expoentes */
+.frac{display:inline-flex;flex-direction:column;align-items:center;
+  vertical-align:middle;line-height:1;margin:0 1px}
+.frac .num{padding:1px 5px 3px;border-bottom:1.5px solid currentColor;
+  text-align:center;min-width:1ch}
+.frac .den{padding:3px 5px 1px;text-align:center;min-width:1ch}
+/* parênteses que se esticam para cobrir frações altas */
+.paren{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 2px}
+.paren::before,.paren::after{content:'';display:block;border:1.5px solid currentColor;width:5px;min-height:1.6em}
+.paren::before{border-right:none;border-radius:4px 0 0 4px}
+.paren::after{border-left:none;border-radius:0 4px 4px 0}
+sup{font-size:.6em;line-height:0;vertical-align:super}
+
+/* escolhas */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.choice{border:2px solid #e2e8f0;background:#fafafa;border-radius:14px;
+  padding:13px 8px;cursor:pointer;font-size:clamp(18px,3vw,23px);
+  text-align:center;line-height:2;transition:.15s;width:100%;
+  min-height:72px;display:flex;align-items:center;justify-content:center}
+.choice:hover:not(:disabled){border-color:#4f46e5;background:#f5f3ff;
+  transform:translateY(-1px);box-shadow:0 4px 12px rgba(79,70,229,.18)}
+.choice.ok{border-color:#10b981;background:#ecfdf5;transform:none}
+.choice.ko{border-color:#ef4444;background:#fff1f2}
+.choice:disabled{cursor:default}
+
+/* feedback */
+.fb{border-radius:12px;padding:10px 13px;font-size:13px;
+  display:flex;align-items:flex-start;gap:7px;margin-bottom:9px;
+  min-height:40px;line-height:1.55}
+.fb.neutral{background:#f8fafc;border:1px solid #e2e8f0;color:#475569}
+.fb.ok{background:#ecfdf5;border:1px solid #a7f3d0;color:#064e3b}
+.fb.ko{background:#fff1f2;border:1px solid #fca5a5;color:#7f1d1d}
+.fb-icon{flex-shrink:0;font-size:17px;line-height:1.45}
+
+/* botão dica */
+.actions{display:flex;gap:8px;justify-content:center}
+.btn-hint{border:1.5px solid #cbd5e1;background:#f8fafc;border-radius:50px;
+  padding:6px 18px;font-size:12px;cursor:pointer;color:#334155;transition:.15s}
+.btn-hint:hover{border-color:#4f46e5;color:#4f46e5;background:#f5f3ff}
+
+/* ecrã final */
+.end{text-align:center;padding:8px 0 4px}
+.end h2{font-size:21px;color:#1e293b;margin:5px 0}
+.score-big{font-size:54px;font-weight:900;
+  background:linear-gradient(135deg,#4f46e5,#db2777);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin:6px 0 3px}
+.end-msg{font-size:15px;color:#475569;margin-bottom:18px}
+.btn-play{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
+  border:none;border-radius:50px;padding:11px 34px;font-size:15px;
+  font-weight:700;cursor:pointer;transition:.15s}
+.btn-play:hover{transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(79,70,229,.45)}
+
+/* card das regras */
+.rules-card{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);
+  border-radius:16px;padding:14px 16px;font-size:13.5px;color:#fff}
+.rules-card b{display:block;margin-bottom:8px;font-size:14px}
+.rule{margin:5px 0;line-height:1.7}
+
+.hidden{display:none!important}
+@media(max-width:450px){
+  .choices{grid-template-columns:1fr}
+  .choice{font-size:18px}
+  .q-expr{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚡ Potências com Expoente Negativo</h1>
+  <p class="sub">8.º Ano — pratica as três regras</p>
+
+  <div class="tabs">
+    <button class="tab active" id="t1" onclick="setLevel(1)">Nível 1</button>
+    <button class="tab"        id="t2" onclick="setLevel(2)">Nível 2</button>
+  </div>
+  <p class="tab-desc" id="tabDesc">Nível 1 — inverte a base e troca o sinal do expoente</p>
+
+  <div class="card">
+    <div class="stats">
+      <span class="badge bg-g" id="elScore">Acertos: 0</span>
+      <span class="badge bg-p" id="elNivel">Nível 1</span>
+      <span class="badge bg-a" id="elRound">Questão 1 / 15</span>
+      <span class="badge bg-b" id="elTempo">0 s</span>
+    </div>
+    <div class="bar"><div class="bar-fill" id="elProg" style="width:0%"></div></div>
+
+    <!-- Quiz -->
+    <div id="quizArea">
+      <div class="q-area">
+        <div class="q-label" id="elQLabel">Qual a expressão equivalente?</div>
+        <div class="q-expr"  id="elQ"></div>
+        <div class="q-prompt" id="elPr"></div>
+      </div>
+      <div class="choices" id="elChoices"></div>
+      <div class="fb neutral" id="elFb">
+        <span class="fb-icon">💡</span><span>Escolhe uma das opções acima.</span>
+      </div>
+      <div class="actions">
+        <button class="btn-hint" id="btnHint" onclick="showHint()">Mostrar dica</button>
+      </div>
+    </div>
+
+    <!-- Fim -->
+    <div class="end hidden" id="endScreen">
+      <div style="font-size:46px">🏆</div>
+      <h2>Fim do jogo!</h2>
+      <div class="score-big" id="elEndScore">0 / 15</div>
+      <div class="end-msg"   id="elEndMsg"></div>
+      <button class="btn-play" onclick="restartGame()">Jogar de novo</button>
+    </div>
+  </div><!-- /card -->
+
+  <div class="card rules-card">
+    <b>📐 Regras a aplicar</b>
+    <div class="rule">
+      ① <b>Expoente simétrico → base inversa:</b>&ensp;
+      <span class="paren"><span class="frac"><span class="num">a</span><span class="den">b</span></span></span><sup>−n</sup>
+      =
+      <span class="paren"><span class="frac"><span class="num">b</span><span class="den">a</span></span></span><sup>n</sup>
+    </div>
+    <div class="rule">
+      ② <b>Potência de fração:</b>&ensp;
+      <span class="paren"><span class="frac"><span class="num">a</span><span class="den">b</span></span></span><sup>n</sup>
+      =
+      <span class="frac"><span class="num">a<sup>n</sup></span><span class="den">b<sup>n</sup></span></span>
+    </div>
+    <div class="rule">
+      ③ <b>Regra dos sinais:</b>&ensp;
+      (−a)<sup>par</sup> &gt; 0 &nbsp;|&nbsp; (−a)<sup>ímpar</sup> &lt; 0
+    </div>
+  </div>
+</div><!-- /wrap -->
+
+<script>
+// ═══════════════════════════════════════════════
+//  Utilitários matemáticos
+// ═══════════════════════════════════════════════
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+function simp(n,d){
+  if(!d)return[0,1];
+  const g=gcd(Math.abs(n),Math.abs(d));
+  n=n/g; d=d/g;
+  if(d<0){n=-n;d=-d;}
+  return[n,d];
+}
+function powFrac(n,d,exp){
+  if(exp<0){[n,d]=[d,n];exp=-exp;}
+  let N=1,D=1;
+  for(let i=0;i<exp;i++){N*=n;D*=d;}
+  return simp(N,D);
+}
+
+// ═══════════════════════════════════════════════
+//  Renderização HTML de expressões matemáticas
+// ═══════════════════════════════════════════════
+
+// fração vertical n/d (se d=1 devolve só n como texto)
+function rFrac(n,d){
+  if(d===1) return String(n);
+  return `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+}
+
+// (n/d)^exp  — paren=true envolve a base em parênteses que se esticam
+function rPow(n,d,exp,paren=true){
+  let base=rFrac(n,d);
+  if(paren && d!==1)             base=`<span class="paren">${base}</span>`;
+  else if(paren && d===1 && n<0) base=`(${n})`;
+  return `${base}<sup>${exp}</sup>`;
+}
+
+// −(n/d)^exp  (sinal negativo explícito à frente)
+function rNeg(n,d,exp){return `−${rPow(n,d,exp,true)}`;}
+
+// valor numérico simplificado
+function rVal(n,d){const[a,b]=simp(n,d);return b===1?String(a):rFrac(a,b);}
+
+// ═══════════════════════════════════════════════
+//  Auxiliares
+// ═══════════════════════════════════════════════
+function rand(lo,hi){return Math.floor(Math.random()*(hi-lo+1))+lo;}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
+
+// ═══════════════════════════════════════════════
+//  Geradores de questões
+// ═══════════════════════════════════════════════
+
+/* ── NÍVEL 1, TIPO A ───────────────────────────
+   (a/b)^{-n}  →  escolhe (b/a)^n
+   Regra: expoente simétrico / base inversa
+   Base positiva                                */
+function genL1A(){
+  let a,b;
+  do{a=rand(2,7);b=rand(2,7);}while(b===a);
+  const n=pick([2,3,4]);
+
+  const qH=rPow(a,b,-n);
+  const cH=rPow(b,a,n);
+
+  const opts=[
+    {h:cH,              ok:true },
+    {h:rPow(a,b,n),     ok:false},  // erro: não inverteu a base
+    {h:rPow(b,a,-n),    ok:false},  // erro: não trocou o sinal do expoente
+    {h:rPow(a,b,-n),    ok:false},  // erro: não fez nada (igual à questão)
+  ];
+  shuffle(opts);
+  return{
+    qH, label:'Qual a expressão equivalente com expoente positivo?',
+    pr:'Inverte a base e troca o sinal do expoente.',
+    opts,
+    hint:`💡 A base é <b>${a}/${b}</b>. Ao inverter fica <b>${b}/${a}</b>. O expoente −${n} torna-se +${n}.`,
+    expl:`🔄 <b>Regra ①:</b> (a/b)<sup>−n</sup> = (b/a)<sup>n</sup><br>${rPow(a,b,-n)} = <b>${cH}</b>`,
+  };
+}
+
+/* ── NÍVEL 1, TIPO B ───────────────────────────
+   (−a/b)^{-n}  →  escolhe (−b/a)^n
+   Base negativa — sinal fica no numerador      */
+function genL1B(){
+  let a,b;
+  do{a=rand(2,5);b=rand(2,5);}while(b===a);
+  const n=pick([2,3,4]);
+
+  const qH=rPow(-a,b,-n);
+  const cH=rPow(-b,a,n);        // (−b/a)^n
+
+  const opts=[
+    {h:cH,              ok:true },
+    {h:rPow(b,a,n),     ok:false},  // erro: perdeu o sinal negativo
+    {h:rPow(-a,b,n),    ok:false},  // erro: só trocou o expoente, não inverteu
+    {h:rPow(-b,a,-n),   ok:false},  // erro: inverteu mas não trocou o expoente
+  ];
+  shuffle(opts);
+  return{
+    qH, label:'Qual a expressão equivalente com expoente positivo?',
+    pr:'Inverte a base e troca o sinal do expoente — atenção ao sinal negativo!',
+    opts,
+    hint:`💡 Inverte a fração: o −${a} vai para o numerador e o ${b} para o denominador → (−${b}/${a})<sup>${n}</sup>.`,
+    expl:`🔄 <b>Regra ①:</b> (−${a}/${b})<sup>−${n}</sup> → inverte a base: <b>${cH}</b><br>O sinal negativo mantém-se no numerador ao inverter.`,
+  };
+}
+
+/* ── NÍVEL 2, TIPO A ───────────────────────────
+   (−a/b)^{-n}  com n PAR  →  (b/a)^n
+   Após inverter, o expoente par elimina o sinal */
+function genL2A(){
+  let a,b;
+  do{a=rand(2,4);b=rand(2,4);}while(b===a);
+  const n=pick([2,4]);
+
+  const qH=rPow(-a,b,-n);
+  const cH=rPow(b,a,n);           // sinal desapareceu
+
+  const opts=[
+    {h:cH,              ok:true },
+    {h:rNeg(b,a,n),     ok:false},  // erro: sinal ainda lá (expoente par foi ignorado)
+    {h:rPow(-b,a,n),    ok:false},  // erro: sinal no numerador (não foi extraído)
+    {h:rPow(-a,b,n),    ok:false},  // erro: só trocou o expoente, não inverteu
+  ];
+  shuffle(opts);
+  return{
+    qH, label:'Simplifica completamente esta potência.',
+    pr:`Atenção ao expoente — é par ou ímpar?`,
+    opts,
+    hint:`💡 Passo 1: inverte a base → (−${b}/${a})<sup>${n}</sup>. Passo 2: o expoente ${n} é <b>par</b> — o sinal negativo desaparece.`,
+    expl:`✨ Passo 1 — inverte: ${rPow(-b,a,n)}<br>Passo 2 — expoente <b>${n} é par</b> → (número negativo)<sup>par</sup> &gt; 0 → sinal desaparece: <b>${cH}</b>`,
+  };
+}
+
+/* ── NÍVEL 2, TIPO B ───────────────────────────
+   (−a/b)^{-n}  com n ÍMPAR  →  −(b/a)^n
+   Após inverter, o expoente ímpar extrai o sinal */
+function genL2B(){
+  let a,b;
+  do{a=rand(2,4);b=rand(2,4);}while(b===a);
+  const n=pick([3,5]);
+
+  const qH=rPow(-a,b,-n);
+  const cH=rNeg(b,a,n);           // sinal saiu para fora
+
+  const opts=[
+    {h:cH,              ok:true },
+    {h:rPow(b,a,n),     ok:false},  // erro: perdeu o sinal (tratou como par)
+    {h:rPow(-b,a,n),    ok:false},  // erro: sinal no numerador (não extraído)
+    {h:rNeg(b,a,-n),    ok:false},  // erro: sinal fora mas expoente ainda negativo
+  ];
+  shuffle(opts);
+  return{
+    qH, label:'Simplifica completamente esta potência.',
+    pr:`Atenção ao expoente — é par ou ímpar?`,
+    opts,
+    hint:`💡 Passo 1: inverte a base → (−${b}/${a})<sup>${n}</sup>. Passo 2: o expoente ${n} é <b>ímpar</b> — o sinal negativo sai para fora da potência.`,
+    expl:`⚠️ Passo 1 — inverte: ${rPow(-b,a,n)}<br>Passo 2 — expoente <b>${n} é ímpar</b> → (número negativo)<sup>ímpar</sup> &lt; 0 → sinal sai para fora: <b>${cH}</b>`,
+  };
+}
+
+/* ── NÍVEL 2, TIPO C ───────────────────────────
+   (1/b)^{-n}  →  b^n   (sem fração no resultado)
+   Pratica que ao inverter 1/b fica b/1 = b       */
+function genL2C(){
+  const b=pick([2,3,4,5]);
+  const n=pick([2,3,4]);
+
+  const qH=rPow(1,b,-n);
+  const cH=`${b}<sup>${n}</sup>`;            // resultado: b^n
+
+  const [w1,w2]=powFrac(1,b,n);              // = 1/b^n (sem inverter)
+  const opts=[
+    {h:cH,                       ok:true },
+    {h:rPow(1,b,n),              ok:false},  // erro: não inverteu (ficou (1/b)^n)
+    {h:`${b}<sup>-${n}</sup>`,   ok:false},  // erro: inverteu a base mas não trocou o expoente
+    {h:rVal(w1,w2),              ok:false},  // erro: calculou (1/b)^n diretamente
+  ];
+  shuffle(opts);
+  return{
+    qH, label:'Simplifica completamente esta potência.',
+    pr:'O resultado final não é uma fração!',
+    opts,
+    hint:`💡 Ao inverter (1/${b})<sup>−${n}</sup> fica (${b}/1)<sup>${n}</sup> = ${b}<sup>${n}</sup>. Agora só tens de reconhecer a expressão.`,
+    expl:`💡 ${rPow(1,b,-n)} = (<span class="frac"><span class="num">${b}</span><span class="den">1</span></span>)<sup>${n}</sup> = <b>${b}<sup>${n}</sup></b>`,
+  };
+}
+
+/* ── NÍVEL 2, TIPO D ───────────────────────────
+   (a/b)^{-n}  →  valor numérico (fração b^n/a^n)
+   Aplica a regra e calcula o valor final          */
+function genL2D(){
+  const pares=[
+    [2,3,2],[3,2,2],[2,5,2],[3,4,2],[4,3,2],
+    [2,3,3],[3,2,3],[4,3,3],[3,5,2],[5,3,2],
+  ];
+  const[a,b,n]=pick(pares);
+
+  const[rn,rd]=powFrac(a,b,-n);
+  const qH=rPow(a,b,-n);
+  const cH=rVal(rn,rd);                      // valor simplificado (ex: 9/4)
+
+  const[wn,wd]=powFrac(a,b,n);              // valor sem inverter (ex: 4/9)
+  const opts=[
+    {h:cH,              ok:true },
+    {h:rVal(wn,wd),     ok:false},            // erro: não inverteu (calculou (a/b)^n)
+    {h:rVal(-rn,rd),    ok:false},            // erro: sinal errado
+    {h:rPow(b,a,n),     ok:false},            // erro: parou no passo intermédio
+  ];
+  // garantir unicidade
+  const seen=new Set();
+  const uOpts=[];
+  for(const o of opts){
+    if(!seen.has(o.h)){seen.add(o.h);uOpts.push(o);}
+  }
+  while(uOpts.length<4){
+    const extra=rVal(rn+rand(1,3),rd);
+    if(!seen.has(extra)){seen.add(extra);uOpts.push({h:extra,ok:false});}
+  }
+  shuffle(uOpts);
+  return{
+    qH, label:'Calcula o valor numérico simplificado.',
+    pr:'Aplica as regras e calcula o resultado como fração simplificada.',
+    opts:uOpts,
+    hint:`💡 Inverte a base: (${b}/${a})<sup>${n}</sup>. Agora calcula ${b}<sup>${n}</sup>/${a}<sup>${n}</sup>.`,
+    expl:`📊 ${rPow(a,b,-n)} = ${rPow(b,a,n)} = <b>${cH}</b>`,
+  };
+}
+
+// ═══════════════════════════════════════════════
+//  Estado do jogo
+// ═══════════════════════════════════════════════
+let lv=1, score=0, round=0;
+const MAX=15;
+let answered=false, currentQ=null;
+let timerID=null, secs=0;
+
+function setLevel(n){
+  lv=n;
+  document.getElementById('t1').classList.toggle('active',n===1);
+  document.getElementById('t2').classList.toggle('active',n===2);
+  document.getElementById('elNivel').textContent=`Nível ${n}`;
+  document.getElementById('tabDesc').textContent= n===1
+    ?'Nível 1 — inverte a base e troca o sinal do expoente'
+    :'Nível 2 — simplificação completa com regra dos sinais';
+  score=0; round=0;
+  document.getElementById('elScore').textContent='Acertos: 0';
+  document.getElementById('endScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  resetTimer();
+  nextQ();
+}
+
+function nextQ(){
+  if(round>=MAX){endGame();return;}
+  answered=false;
+  document.getElementById('btnHint').textContent='Mostrar dica';
+
+  let q;
+  if(lv===1){
+    q=Math.random()<0.45 ? genL1A() : genL1B();
+  } else {
+    const r=Math.random();
+    if(r<0.28)      q=genL2A();
+    else if(r<0.56) q=genL2B();
+    else if(r<0.75) q=genL2C();
+    else            q=genL2D();
+  }
+  currentQ=q;
+
+  document.getElementById('elQLabel').textContent=q.label;
+  document.getElementById('elQ').innerHTML=q.qH;
+  document.getElementById('elPr').textContent=q.pr;
+
+  const el=document.getElementById('elChoices');
+  el.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='choice';
+    btn.innerHTML=o.h;
+    btn.onclick=()=>checkAns(i);
+    el.appendChild(btn);
+  });
+
+  setFb('neutral','💡','Escolhe uma das opções acima.');
+  updateUI();
+}
+
+function checkAns(i){
+  if(answered)return;
+  answered=true;
+  const q=currentQ;
+  const btns=[...document.querySelectorAll('.choice')];
+  btns.forEach(b=>b.disabled=true);
+
+  if(q.opts[i].ok){
+    score++;
+    btns[i].classList.add('ok');
+    setFb('ok','✅',q.expl);
+  } else {
+    btns[i].classList.add('ko');
+    q.opts.forEach((o,j)=>{if(o.ok)btns[j].classList.add('ok');});
+    setFb('ko','❌',q.expl);
+  }
+  document.getElementById('elScore').textContent=`Acertos: ${score}`;
+  round++;
+  updateUI();
+  setTimeout(nextQ,2300);
+}
+
+function showHint(){
+  if(currentQ && !answered) setFb('neutral','💡',currentQ.hint);
+}
+
+function setFb(type,icon,msg){
+  const el=document.getElementById('elFb');
+  el.className=`fb ${type}`;
+  el.innerHTML=`<span class="fb-icon">${icon}</span><span>${msg}</span>`;
+}
+
+function updateUI(){
+  document.getElementById('elRound').textContent=`Questão ${Math.min(round+1,MAX)} / ${MAX}`;
+  document.getElementById('elProg').style.width=`${(round/MAX)*100}%`;
+}
+
+function resetTimer(){
+  clearInterval(timerID); secs=0;
+  document.getElementById('elTempo').textContent='0 s';
+  timerID=setInterval(()=>{
+    secs++;
+    document.getElementById('elTempo').textContent=`${secs} s`;
+  },1000);
+}
+
+function endGame(){
+  clearInterval(timerID);
+  document.getElementById('quizArea').classList.add('hidden');
+  document.getElementById('endScreen').classList.remove('hidden');
+  document.getElementById('elEndScore').textContent=`${score} / ${MAX}`;
+  const p=score/MAX;
+  document.getElementById('elEndMsg').textContent=
+    p>=0.93?'🌟 Excelente! Dominaste completamente as regras das potências!':
+    p>=0.73?'🎉 Muito bem! Estás quase a dominar. Continua assim!':
+    p>=0.53?'👍 Bom esforço! Revê as regras e tenta novamente.':
+            '💪 Continua a praticar! Lê as regras em baixo e tenta de novo.';
+}
+
+function restartGame(){
+  score=0; round=0;
+  document.getElementById('elScore').textContent='Acertos: 0';
+  document.getElementById('endScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  resetTimer();
+  nextQ();
+}
+
+// Arranca
+resetTimer();
+nextQ();
+</script>
+</body>
+</html>
