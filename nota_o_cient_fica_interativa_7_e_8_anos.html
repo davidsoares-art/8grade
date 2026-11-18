@@ -1,0 +1,2780 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notação Científica Interativa — 7.º e 8.º Anos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #0F172A;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .canva-card {
+            background: #FFFFFF;
+            border-radius: 1.5rem;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+        }
+        .lcd-screen {
+            background: linear-gradient(180deg, #C7D8C6 0%, #B4C9B3 100%);
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.22);
+            color: #1A2B1C;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Grelha fixa para o Simulador da Vírgula sem saltos nem desalinhamentos */
+        .digit-cell {
+            width: 44px;
+            min-width: 44px;
+            height: 58px;
+        }
+        .comma-slot {
+            width: 24px;
+            min-width: 24px;
+            height: 58px;
+            cursor: pointer;
+        }
+        .comma-slot:hover .slot-hint {
+            opacity: 1;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            height: 7px;
+            width: 7px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 9999px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+    <!-- CABEÇALHO -->
+    <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white font-mono font-extrabold text-base shadow-md shadow-indigo-200 flex-shrink-0">
+                    10<sup>n</sup>
+                </div>
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h1 class="font-display text-lg sm:text-xl font-extrabold tracking-tight text-slate-900">
+                            Notação Científica Interativa
+                        </h1>
+                        <span class="px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wider rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                            7.º e 8.º Anos
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500">
+                        Potências de base 10, deslocação da vírgula, ordenação e calculadora científica
+                    </p>
+                </div>
+            </div>
+
+            <!-- NAVEGAÇÃO PRINCIPAL POR SEPARADORES -->
+            <nav class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/70" aria-label="Secções">
+                <button onclick="switchTab('aprender')" id="tab-aprender"
+                    class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-indigo-600 text-white shadow-sm">
+                    1. Explorar e Aprender
+                </button>
+                <button onclick="switchTab('laboratorio')" id="tab-laboratorio"
+                    class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                    2. Laboratório & Calculadora
+                </button>
+                <button onclick="switchTab('ordenacao')" id="tab-ordenacao"
+                    class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                    3. Desafio de Ordenação
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-quiz"
+                    class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                    4. Quiz Interativo
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
+
+        <!-- ========================================================= -->
+        <!-- SEPARADOR 1: EXPLORAR E APRENDER (4 PÁGINAS / SLIDES)     -->
+        <!-- ========================================================= -->
+        <section id="panel-aprender" class="tab-panel space-y-5">
+
+            <!-- BARRA DE NAVEGAÇÃO DOS 4 PASSOS (SLIDES) -->
+            <div class="canva-card p-4 sm:p-5 space-y-3.5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span id="learn-step-pill" class="px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-extrabold tracking-wide">
+                            Passo 1 de 4
+                        </span>
+                        <span id="learn-step-subtitle" class="text-xs sm:text-sm font-bold text-slate-700">
+                            Potências de Base 10
+                        </span>
+                    </div>
+                    <span class="text-[11px] font-semibold text-slate-400 hidden sm:inline">
+                        Dica: Usa as setas ← e → do teclado ou clica nos passos abaixo
+                    </span>
+                </div>
+
+                <!-- Botões dos 4 Slides -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                    <button onclick="goToLearnPage(1)" id="learn-nav-1"
+                        class="learn-nav-btn p-3 rounded-2xl border-2 border-indigo-600 bg-indigo-50/80 text-left transition flex items-center gap-2.5 shadow-sm">
+                        <span class="w-7 h-7 rounded-xl bg-indigo-600 text-white font-mono text-xs font-extrabold flex items-center justify-center flex-shrink-0">1</span>
+                        <div class="min-w-0">
+                            <div class="text-xs font-extrabold text-indigo-950 truncate">Potências de 10</div>
+                            <div class="text-[11px] text-indigo-700 truncate">10<sup>k</sup> = 100…0</div>
+                        </div>
+                    </button>
+
+                    <button onclick="goToLearnPage(2)" id="learn-nav-2"
+                        class="learn-nav-btn p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-300 text-left transition flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-xl bg-slate-200 text-slate-700 font-mono text-xs font-extrabold flex items-center justify-center flex-shrink-0">2</span>
+                        <div class="min-w-0">
+                            <div class="text-xs font-extrabold text-slate-800 truncate">Sentidos da Vírgula</div>
+                            <div class="text-[11px] text-slate-500 truncate">Regras & Treino</div>
+                        </div>
+                    </button>
+
+                    <button onclick="goToLearnPage(3)" id="learn-nav-3"
+                        class="learn-nav-btn p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-300 text-left transition flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-xl bg-slate-200 text-slate-700 font-mono text-xs font-extrabold flex items-center justify-center flex-shrink-0">3</span>
+                        <div class="min-w-0">
+                            <div class="text-xs font-extrabold text-slate-800 truncate">Anatomia a × 10<sup>n</sup></div>
+                            <div class="text-[11px] text-slate-500 truncate">1 ≤ a &lt; 10 e Testes</div>
+                        </div>
+                    </button>
+
+                    <button onclick="goToLearnPage(4)" id="learn-nav-4"
+                        class="learn-nav-btn p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-300 text-left transition flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-xl bg-slate-200 text-slate-700 font-mono text-xs font-extrabold flex items-center justify-center flex-shrink-0">4</span>
+                        <div class="min-w-0">
+                            <div class="text-xs font-extrabold text-slate-800 truncate">Simulador da Vírgula</div>
+                            <div class="text-[11px] text-slate-500 truncate">Casos Reais & Arcos</div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Barra de Progresso Visual -->
+                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div id="learn-progress-bar" class="h-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 transition-all duration-300" style="width: 25%"></div>
+                </div>
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- PÁGINA 1: RECORDAR POTÊNCIAS DE BASE 10               -->
+            <!-- ===================================================== -->
+            <div id="learn-page-1" class="learn-page canva-card p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-800 mb-1.5">
+                            Página 1 de 4 • Revisão Fundamental
+                        </span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+                            Potências de base 10: <span class="font-mono text-indigo-600">10<sup>k</sup> = 100…0</span> (<span class="font-mono">k</span> zeros)
+                        </h2>
+                    </div>
+                    <div class="px-4 py-2 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-bold text-amber-900">
+                        Não te esqueças: 10<sup>0</sup> = 1 (zero zeros!)
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Controlo Interativo de k -->
+                    <div class="lg:col-span-5 bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-4">
+                        <div class="flex items-center justify-between gap-2">
+                            <label for="pow10-slider" class="text-sm font-bold text-slate-700">
+                                Expoente <span class="font-mono text-indigo-600 font-extrabold">k</span>:
+                            </label>
+                            <span id="pow10-k-badge" class="px-3 py-1 rounded-xl bg-white border border-slate-300 font-mono text-lg font-extrabold text-indigo-700 shadow-sm">0</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="changePow10(-1)"
+                                class="px-3 py-2 rounded-xl bg-white hover:bg-pink-50 border border-slate-300 hover:border-pink-400 font-extrabold text-xs text-slate-800 transition shadow-sm">
+                                − Diminuir (÷ 10)
+                            </button>
+                            <button onclick="setPow10(0)"
+                                class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 font-mono font-extrabold text-xs text-amber-950 transition shadow-sm">
+                                10<sup>0</sup> = 1
+                            </button>
+                            <button onclick="changePow10(1)"
+                                class="px-3 py-2 rounded-xl bg-white hover:bg-indigo-50 border border-slate-300 hover:border-indigo-400 font-extrabold text-xs text-slate-800 transition shadow-sm">
+                                + Aumentar (× 10)
+                            </button>
+                        </div>
+
+                        <div class="space-y-1">
+                            <input type="range" id="pow10-slider" min="-9" max="9" value="0" oninput="setPow10(this.value)"
+                                class="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 rounded-lg">
+                            <div class="flex justify-between font-mono text-[10px] font-bold text-slate-400 px-0.5">
+                                <span>−9</span>
+                                <span>−6</span>
+                                <span>−3</span>
+                                <span class="text-amber-700 font-extrabold">0</span>
+                                <span>+3</span>
+                                <span>+6</span>
+                                <span>+9</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <button onclick="setPow10(-6)" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-pink-50 border border-pink-200 text-pink-900 hover:border-pink-400">10<sup>−6</sup></button>
+                            <button onclick="setPow10(-3)" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-pink-50 border border-pink-200 text-pink-900 hover:border-pink-400">10<sup>−3</sup></button>
+                            <button onclick="setPow10(-1)" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-pink-50 border border-pink-200 text-pink-900 hover:border-pink-400">10<sup>−1</sup></button>
+                            <button onclick="setPow10(0)" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-amber-100 border border-amber-300 text-amber-950 hover:border-amber-500">10<sup>0</sup></button>
+                            <button onclick="setPow10(1)" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-50 border border-indigo-200 text-indigo-900 hover:border-indigo-400">10<sup>1</sup></button>
+                            <button onclick="setPow10(3)" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-50 border border-indigo-200 text-indigo-900 hover:border-indigo-400">10<sup>3</sup></button>
+                            <button onclick="setPow10(6)" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-50 border border-indigo-200 text-indigo-900 hover:border-indigo-400">10<sup>6</sup></button>
+                            <button onclick="setPow10(9)" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-50 border border-indigo-200 text-indigo-900 hover:border-indigo-400">10<sup>9</sup></button>
+                        </div>
+                    </div>
+
+                    <!-- Visualização Numerada dos Zeros ou Casas Decimais -->
+                    <div id="pow10-display-box" class="lg:col-span-7 bg-gradient-to-br from-amber-50/80 via-white to-slate-50 p-6 rounded-2xl border border-amber-200 space-y-4 transition-colors">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex flex-wrap items-baseline gap-3">
+                                <span id="pow10-expr" class="font-mono text-3xl sm:text-4xl font-extrabold text-amber-800">10<sup>0</sup></span>
+                                <span class="font-mono text-2xl font-bold text-slate-400">=</span>
+                                <span id="pow10-formatted" class="font-mono text-2xl sm:text-3xl font-extrabold text-slate-900">1</span>
+                            </div>
+                            <span id="pow10-rule-pill" class="px-3 py-1 rounded-full text-xs font-extrabold bg-amber-200 text-amber-950">
+                                Ponto de partida (0 zeros)
+                            </span>
+                        </div>
+
+                        <div id="pow10-blocks" class="flex flex-wrap items-end gap-1.5 pt-2"></div>
+
+                        <p id="pow10-caption" class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                            Ponto de partida: <strong>10<sup>0</sup> = 1</strong> (zero zeros à direita e zero casas decimais). Avança para a frente (+) ou recua para trás (−).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Síntese das Potências de Base 10 (7.º e 8.º Anos) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200 space-y-1.5">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-800">Expoente Natural (k &gt; 0)</span>
+                        <div class="font-mono text-base font-extrabold text-slate-900">10<sup>k</sup> = 100…0 <span class="text-xs font-sans font-semibold text-indigo-700">(k zeros)</span></div>
+                        <p class="text-xs text-slate-600">Ex.: 10<sup>3</sup> = 1000 (3 zeros); 10<sup>6</sup> = 1 000 000 (6 zeros).</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-1.5">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-900">Expoente Zero (k = 0)</span>
+                        <div class="font-mono text-base font-extrabold text-slate-900">10<sup>0</sup> = 1 <span class="text-xs font-sans font-semibold text-amber-800">(0 zeros)</span></div>
+                        <p class="text-xs text-slate-600">Qualquer potência de base 10 com expoente zero é igual à unidade.</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-pink-50/60 border border-pink-200 space-y-1.5">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-pink-800">Expoente Negativo (8.º Ano)</span>
+                        <div class="font-mono text-base font-extrabold text-slate-900">10<sup>−k</sup> = 0,00…1 <span class="text-xs font-sans font-semibold text-pink-700">(k casas decimais)</span></div>
+                        <p class="text-xs text-slate-600">Ex.: 10<sup>−1</sup> = 0,1; 10<sup>−3</sup> = 0,001 (3 casas decimais).</p>
+                    </div>
+                </div>
+
+                <!-- Exercício Rápido da 1.ª Parte da Ficha -->
+                <div class="bg-slate-50 p-5 sm:p-6 rounded-3xl border border-slate-200 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[11px] font-extrabold uppercase tracking-wider">
+                                Experimenta tu mesmo! • Ficha 1.ª Parte
+                            </span>
+                            <h3 class="font-display text-lg font-extrabold text-slate-900 mt-1">
+                                Pratica Potências de Base 10
+                            </h3>
+                        </div>
+                        <button onclick="checkPow10Practice()"
+                            class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-sm transition self-start sm:self-auto">
+                            Verificar Respostas
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Coluna 1: Escreve como potência de 10 -->
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+                            <div class="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
+                                1. Escreve como potência de base 10 (indica o expoente):
+                            </div>
+                            <div class="space-y-2.5 font-mono text-sm">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span>a) 1 000 = 10<sup class="ml-0.5"><input type="number" id="p10-q1a" class="w-14 px-1.5 py-0.5 rounded border border-slate-300 text-center text-xs font-extrabold text-indigo-700 focus:outline-none focus:border-indigo-500" placeholder="exp"></sup></span>
+                                    <span id="p10-f1a" class="text-xs font-sans font-bold"></span>
+                                </div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <span>b) 1 000 000 = 10<sup class="ml-0.5"><input type="number" id="p10-q1b" class="w-14 px-1.5 py-0.5 rounded border border-slate-300 text-center text-xs font-extrabold text-indigo-700 focus:outline-none focus:border-indigo-500" placeholder="exp"></sup></span>
+                                    <span id="p10-f1b" class="text-xs font-sans font-bold"></span>
+                                </div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <span>c) 1 000 000 000 = 10<sup class="ml-0.5"><input type="number" id="p10-q1c" class="w-14 px-1.5 py-0.5 rounded border border-slate-300 text-center text-xs font-extrabold text-indigo-700 focus:outline-none focus:border-indigo-500" placeholder="exp"></sup></span>
+                                    <span id="p10-f1c" class="text-xs font-sans font-bold"></span>
+                                </div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <span>d) 0,001 <span class="font-sans text-[11px] text-pink-700">(8.º)</span> = 10<sup class="ml-0.5"><input type="number" id="p10-q1d" class="w-14 px-1.5 py-0.5 rounded border border-slate-300 text-center text-xs font-extrabold text-pink-700 focus:outline-none focus:border-pink-500" placeholder="exp"></sup></span>
+                                    <span id="p10-f1d" class="text-xs font-sans font-bold"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coluna 2: Escreve o valor das potências de 10 -->
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+                            <div class="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
+                                2. Escreve o valor das seguintes potências de 10:
+                            </div>
+                            <div class="space-y-2.5 font-mono text-sm">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <span>a) 10<sup>4</sup> =</span>
+                                        <input type="text" id="p10-q2a" class="w-32 px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-extrabold focus:outline-none focus:border-indigo-500" placeholder="valor">
+                                    </div>
+                                    <span id="p10-f2a" class="text-xs font-sans font-bold"></span>
+                                </div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <span>b) 10<sup>0</sup> =</span>
+                                        <input type="text" id="p10-q2b" class="w-32 px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-extrabold focus:outline-none focus:border-indigo-500" placeholder="valor">
+                                    </div>
+                                    <span id="p10-f2b" class="text-xs font-sans font-bold"></span>
+                                </div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <span>c) 10<sup>7</sup> =</span>
+                                        <input type="text" id="p10-q2c" class="w-32 px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-extrabold focus:outline-none focus:border-indigo-500" placeholder="valor">
+                                    </div>
+                                    <span id="p10-f2c" class="text-xs font-sans font-bold"></span>
+                                </div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <span>d) 10<sup>−2</sup> <span class="font-sans text-[11px] text-pink-700">(8.º)</span> =</span>
+                                        <input type="text" id="p10-q2d" class="w-28 px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-extrabold focus:outline-none focus:border-pink-500" placeholder="valor">
+                                    </div>
+                                    <span id="p10-f2d" class="text-xs font-sans font-bold"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rodapé de Navegação da Página -->
+                <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <span class="text-xs font-bold text-slate-400">Início da explicação</span>
+                    <button onclick="goToLearnPage(2)"
+                        class="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-sm transition">
+                        Próxima Página: Sentidos da Vírgula →
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- PÁGINA 2: OS DOIS SENTIDOS DA VÍRGULA + TREINO        -->
+            <!-- ===================================================== -->
+            <div id="learn-page-2" class="learn-page hidden canva-card p-6 sm:p-8 space-y-7">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div class="space-y-1.5">
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-teal-100 text-teal-800">
+                            Página 2 de 4 • Os Dois Sentidos da Vírgula & Prática Imediata
+                        </span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+                            Como a vírgula se desloca nos dois sentidos?
+                        </h2>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                            Primeiro recordamos como passar da <strong>Notação Científica para a Forma Decimal</strong> (multiplicando ou dividindo por potências de 10) e, em seguida, o <strong>processo oposto</strong> para escrever na forma de <strong>Notação Científica</strong>.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 self-start lg:self-auto flex-shrink-0">
+                        <button onclick="setDrillYear('7ano')" id="drill-year-7"
+                            class="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white shadow-sm transition">
+                            7.º Ano (Exp. ≥ 0)
+                        </button>
+                        <button onclick="setDrillYear('8ano')" id="drill-year-8"
+                            class="px-3.5 py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition">
+                            8.º Ano (Exp. ∈ ℤ)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABELA-RESUMO EXPLÍCITA DAS REGRAS DE DESLOCAÇÃO DA VÍRGULA -->
+                <div class="rounded-3xl border-2 border-slate-900 bg-white overflow-hidden shadow-md">
+                    <div class="bg-slate-900 text-white px-5 py-3.5 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-lg bg-teal-400 text-slate-950 text-[11px] font-extrabold uppercase tracking-wider">
+                                Quadro-Síntese
+                            </span>
+                            <h3 class="font-display text-sm sm:text-base font-extrabold">
+                                Regra da Deslocação da Vírgula (Sentidos Opostos)
+                            </h3>
+                        </div>
+                        <span class="text-[11px] text-slate-300 font-semibold">
+                            Consulta rápida antes de resolver os exercícios
+                        </span>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scroll">
+                        <table class="w-full text-left border-collapse min-w-[640px]">
+                            <thead>
+                                <tr class="bg-slate-100 border-b-2 border-slate-300 text-xs sm:text-sm font-extrabold text-slate-900">
+                                    <th class="p-4 border-r border-slate-200 w-1/4">
+                                        Tipo de Expoente
+                                    </th>
+                                    <th class="p-4 border-r border-slate-200 bg-amber-50/90 text-amber-950 w-[37.5%]">
+                                        <div class="text-[11px] uppercase tracking-wider text-amber-700 font-extrabold mb-0.5">1.º Sentido (Expandir)</div>
+                                        Notação Científica → Decimal
+                                    </th>
+                                    <th class="p-4 bg-indigo-50/90 text-indigo-950 w-[37.5%]">
+                                        <div class="text-[11px] uppercase tracking-wider text-indigo-700 font-extrabold mb-0.5">2.º Sentido (Comprimir)</div>
+                                        Decimal → Notação Científica
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-xs sm:text-sm">
+                                <!-- Linha 1: 10^k (k > 0) -->
+                                <tr>
+                                    <td class="p-4 border-r border-slate-200 bg-slate-50/70 align-middle">
+                                        <div class="font-extrabold text-slate-900">Expoente Positivo</div>
+                                        <div class="font-mono text-sm sm:text-base font-extrabold text-indigo-700 mt-0.5">10<sup>k</sup> <span class="text-xs font-sans font-semibold text-slate-500">(com k &gt; 0)</span></div>
+                                    </td>
+                                    <td class="p-4 border-r border-slate-200 bg-amber-50/30 align-middle">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-sky-100 text-sky-950 font-extrabold text-xs sm:text-sm border border-sky-200">
+                                            Vírgula para a DIREITA → <span class="font-mono">(k casas)</span>
+                                        </span>
+                                        <p class="text-xs text-slate-600 mt-1.5">
+                                            O número cresce (ex.: <span class="font-mono font-bold">2,3 × 10<sup>4</sup> = 23 000</span>).
+                                        </p>
+                                    </td>
+                                    <td class="p-4 bg-indigo-50/30 align-middle">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-teal-100 text-teal-950 font-extrabold text-xs sm:text-sm border border-teal-200">
+                                            Vírgula para a ESQUERDA ← <span class="font-mono">(k casas)</span>
+                                        </span>
+                                        <p class="text-xs text-slate-600 mt-1.5">
+                                            Números grandes ≥ 10 (ex.: <span class="font-mono font-bold">23 000 = 2,3 × 10<sup>4</sup></span>).
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <!-- Linha 2: 10^-k (k > 0) -->
+                                <tr>
+                                    <td class="p-4 border-r border-slate-200 bg-slate-50/70 align-middle">
+                                        <div class="font-extrabold text-slate-900">Expoente Negativo</div>
+                                        <div class="font-mono text-sm sm:text-base font-extrabold text-pink-700 mt-0.5">10<sup>−k</sup> <span class="text-xs font-sans font-semibold text-slate-500">(com k &gt; 0)</span></div>
+                                    </td>
+                                    <td class="p-4 border-r border-slate-200 bg-amber-50/30 align-middle">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-100 text-purple-950 font-extrabold text-xs sm:text-sm border border-purple-200">
+                                            Vírgula para a ESQUERDA ← <span class="font-mono">(k casas)</span>
+                                        </span>
+                                        <p class="text-xs text-slate-600 mt-1.5">
+                                            O número diminui (ex.: <span class="font-mono font-bold">4,5 × 10<sup>−3</sup> = 0,0045</span>).
+                                        </p>
+                                    </td>
+                                    <td class="p-4 bg-indigo-50/30 align-middle">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-pink-100 text-pink-950 font-extrabold text-xs sm:text-sm border border-pink-200">
+                                            Vírgula para a DIREITA → <span class="font-mono">(k casas)</span>
+                                        </span>
+                                        <p class="text-xs text-slate-600 mt-1.5">
+                                            Números pequenos &lt; 1 (ex.: <span class="font-mono font-bold">0,0045 = 4,5 × 10<sup>−3</sup></span>).
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PRIMEIRO BLOCO: NOTAÇÃO CIENTÍFICA -> FORMA DECIMAL (NORMAL) -->
+                <div class="rounded-3xl border-2 border-amber-300 bg-amber-50/45 p-5 sm:p-6 space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200/80 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-3 py-1 rounded-xl bg-amber-600 text-white text-xs font-extrabold uppercase tracking-wide">
+                                1.º Processo • Expandir
+                            </span>
+                            <h3 class="font-mono text-sm sm:text-lg font-extrabold text-amber-950">
+                                Notação Científica → Forma Decimal (Normal)
+                            </h3>
+                        </div>
+                        <span class="text-xs font-bold text-amber-900">
+                            Multiplicar ou dividir por 10<sup>k</sup>
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- Expoente Positivo: Multiplicar por 10^k -->
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-amber-200/90 space-y-2.5 shadow-sm">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-extrabold text-slate-800 uppercase">Expoente POSITIVO (× 10<sup>k</sup>)</span>
+                                <span class="px-2.5 py-0.5 rounded-lg bg-sky-100 text-sky-900 font-mono text-xs font-extrabold">
+                                    Vírgula → Direita (k casas)
+                                </span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                Multiplicar um número racional por <strong>10<sup>k</sup></strong> desloca a vírgula <strong class="text-slate-900">k casas para a DIREITA (→)</strong>. Se faltar espaço, acrescentam-se zeros no fim:
+                            </p>
+                            <div class="bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs sm:text-sm text-slate-800 space-y-1">
+                                <div>• 3450,345 × 100 = <strong>345034,5</strong> <span class="text-sky-700">(2 casas →)</span></div>
+                                <div>• 0,056 × 1000 = <strong>56</strong> <span class="text-sky-700">(3 casas →)</span></div>
+                                <div>• 7,2 × 10000 = <strong>72000</strong> <span class="text-sky-700">(4 casas →)</span></div>
+                                <div>• 2,3 × 10<sup>6</sup> = <strong>2 300 000</strong> <span class="text-sky-700">(6 casas →)</span></div>
+                                <div>• 1,496 × 10<sup>8</sup> = <strong>149 600 000</strong> <span class="text-sky-700">(8 casas →)</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Expoente Negativo: Dividir por 10^k -->
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-amber-200/90 space-y-2.5 shadow-sm">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-extrabold text-slate-800 uppercase">Expoente NEGATIVO (× 10<sup>−k</sup> = ÷ 10<sup>k</sup>) • 8.º Ano</span>
+                                <span class="px-2.5 py-0.5 rounded-lg bg-purple-100 text-purple-900 font-mono text-xs font-extrabold">
+                                    Vírgula ← Esquerda (k casas)
+                                </span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                Dividir por <strong>10<sup>k</sup></strong> (ou multiplicar por <strong>10<sup>−k</sup></strong>) desloca a vírgula <strong class="text-slate-900">k casas para a ESQUERDA (←)</strong>, acrescentando zeros à esquerda:
+                            </p>
+                            <div class="bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs sm:text-sm text-slate-800 space-y-1">
+                                <div>• 578,3 ÷ 10 = <strong>57,83</strong> <span class="text-purple-700">(1 casa ←)</span></div>
+                                <div>• 32,45 ÷ 10<sup>4</sup> = <strong>0,003245</strong> <span class="text-purple-700">(4 casas ←)</span></div>
+                                <div>• 4,5 × 10<sup>−3</sup> = 4,5 ÷ 10<sup>3</sup> = <strong>0,0045</strong> <span class="text-purple-700">(3 casas ←)</span></div>
+                                <div>• 1,67 × 10<sup>−4</sup> = <strong>0,000167</strong> <span class="text-purple-700">(4 casas ←)</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-900 text-white text-xs sm:text-sm leading-relaxed shadow-sm">
+                        <span class="font-extrabold text-amber-300 uppercase tracking-wider block text-[11px] mb-0.5">★ Regra de Ouro (Notação Científica → Forma Decimal)</span>
+                        Expoente positivo (+) faz o número <strong>crescer (vírgula → direita)</strong>; expoente negativo (−) faz o número <strong>diminuir (vírgula ← esquerda)</strong>.
+                    </div>
+
+                    <!-- TREINO 1: NOTAÇÃO CIENTÍFICA -> FORMA DECIMAL (NORMAL) -->
+                    <div class="rounded-2xl border border-amber-300 bg-white p-5 shadow-sm space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-950 text-xs font-extrabold">
+                                Treino 1 • Notação Científica → Forma Decimal
+                            </span>
+                            <span id="drillB-counter" class="text-xs font-bold text-slate-500">Exercício 1</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                            <div class="md:col-span-5 p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                                <div id="drillB-context" class="text-xs font-bold text-amber-700 uppercase tracking-wide">
+                                    Distância de 1 ano-luz
+                                </div>
+                                <div id="drillB-prompt" class="font-mono text-xl sm:text-2xl font-extrabold text-slate-900">
+                                    9,5 × 10<sup>12</sup> km
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-7 space-y-2.5">
+                                <label for="drillB-input" class="block text-xs font-bold text-slate-600">
+                                    Escreve na forma decimal (normal) — podes usar espaços nos milhares ou escrever tudo seguido:
+                                </label>
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <input type="text" id="drillB-input" placeholder="Ex: 9 500 000 000 000"
+                                        onkeydown="if(event.key==='Enter') checkDrillB()"
+                                        class="flex-grow px-4 py-2.5 rounded-xl border-2 border-slate-300 font-mono text-base font-extrabold focus:outline-none focus:border-amber-500">
+                                    <button onclick="checkDrillB()"
+                                        class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs sm:text-sm transition shadow-sm flex-shrink-0">
+                                        Verificar
+                                    </button>
+                                    <button onclick="nextDrillB()"
+                                        class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition flex-shrink-0">
+                                        Próximo →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="drillB-feedback" class="hidden p-3.5 rounded-2xl border text-xs sm:text-sm leading-relaxed"></div>
+                    </div>
+                </div>
+
+                <!-- SEGUNDO BLOCO: FORMA DECIMAL -> NOTAÇÃO CIENTÍFICA (O PROCESSO OPOSTO) -->
+                <div class="rounded-3xl border-2 border-indigo-300 bg-indigo-50/45 p-5 sm:p-6 space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-200/80 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-3 py-1 rounded-xl bg-indigo-600 text-white text-xs font-extrabold uppercase tracking-wide">
+                                2.º Processo (Oposto) • Comprimir
+                            </span>
+                            <h3 class="font-mono text-sm sm:text-lg font-extrabold text-indigo-950">
+                                Forma Decimal → Notação Científica (<span class="font-mono">1 ≤ a &lt; 10</span>)
+                            </h3>
+                        </div>
+                        <span class="text-xs font-bold text-indigo-900">
+                            Colocar a vírgula após o 1.º algarismo significativo
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-200/90 space-y-2.5 shadow-sm">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-extrabold text-slate-800 uppercase">Número grande (≥ 10)</span>
+                                <span class="px-2.5 py-0.5 rounded-lg bg-teal-100 text-teal-900 font-mono text-xs font-extrabold">
+                                    ← Esquerda = Expoente +
+                                </span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                Como é o sentido oposto, deslocamos a vírgula <strong class="text-slate-900">k casas para a ESQUERDA (←)</strong> até ficar entre o 1.º e o 2.º algarismo → O <strong class="text-teal-700">expoente é POSITIVO (+k)</strong>:
+                            </p>
+                            <div class="bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs sm:text-sm text-slate-800 space-y-1">
+                                <div>• 4 540 000 000 <span class="text-teal-700 font-bold">(9 casas ←)</span> = <strong class="text-indigo-700">4,54 × 10<sup>9</sup></strong></div>
+                                <div>• 234000,35 <span class="text-teal-700 font-bold">(5 casas ←)</span> = <strong class="text-indigo-700">2,3400035 × 10<sup>5</sup></strong></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-200/90 space-y-2.5 shadow-sm">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-extrabold text-slate-800 uppercase">Número pequeno (&lt; 1) • 8.º Ano</span>
+                                <span class="px-2.5 py-0.5 rounded-lg bg-pink-100 text-pink-900 font-mono text-xs font-extrabold">
+                                    → Direita = Expoente −
+                                </span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                Deslocamos a vírgula <strong class="text-slate-900">k casas para a DIREITA (→)</strong> até ficar logo após o 1.º algarismo diferente de zero → O <strong class="text-pink-700">expoente é NEGATIVO (−k)</strong>:
+                            </p>
+                            <div class="bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs sm:text-sm text-slate-800 space-y-1">
+                                <div>• 0,00045 <span class="text-pink-700 font-bold">(4 casas →)</span> = <strong class="text-indigo-700">4,5 × 10<sup>−4</sup></strong></div>
+                                <div>• 0,0000025 <span class="text-pink-700 font-bold">(6 casas →)</span> = <strong class="text-indigo-700">2,5 × 10<sup>−6</sup></strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-indigo-900 text-white text-xs sm:text-sm leading-relaxed shadow-sm">
+                        <span class="font-extrabold text-teal-300 uppercase tracking-wider block text-[11px] mb-0.5">★ Regra de Ouro (Forma Decimal → Notação Científica)</span>
+                        Número grande (&gt; 1) → <strong>expoente positivo (+)</strong>; número pequeno (&lt; 1) → <strong>expoente negativo (−)</strong>.
+                    </div>
+
+                    <!-- TREINO 2: FORMA DECIMAL -> NOTAÇÃO CIENTÍFICA -->
+                    <div class="rounded-2xl border border-indigo-300 bg-white p-5 shadow-sm space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-900 text-xs font-extrabold">
+                                Treino 2 • Forma Decimal → Notação Científica
+                            </span>
+                            <span id="drillA-counter" class="text-xs font-bold text-slate-500">Exercício 1</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                            <div class="md:col-span-5 p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                                <div id="drillA-context" class="text-xs font-bold text-indigo-700 uppercase tracking-wide">
+                                    A idade da Terra
+                                </div>
+                                <div id="drillA-prompt" class="font-mono text-lg sm:text-xl font-extrabold text-slate-900 break-all">
+                                    4 540 000 000 anos
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-7 space-y-2.5">
+                                <label class="block text-xs font-bold text-slate-600">
+                                    Escreve na forma <span class="font-mono text-slate-900">a × 10<sup>n</sup></span> (com <span class="font-mono">1 ≤ a &lt; 10</span>):
+                                </label>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <input type="text" id="drillA-coeff" placeholder="coef. a"
+                                        onkeydown="if(event.key==='Enter') checkDrillA()"
+                                        class="w-28 sm:w-32 px-3.5 py-2.5 rounded-xl border-2 border-slate-300 font-mono text-base font-extrabold text-center focus:outline-none focus:border-indigo-500">
+                                    <span class="font-mono text-lg font-extrabold text-slate-700">× 10</span>
+                                    <div class="flex items-center -mt-3">
+                                        <input type="number" id="drillA-exp" placeholder="exp. n"
+                                            onkeydown="if(event.key==='Enter') checkDrillA()"
+                                            class="w-24 px-2.5 py-1.5 rounded-xl border-2 border-indigo-300 bg-indigo-50/40 font-mono text-sm font-extrabold text-center text-indigo-900 focus:outline-none focus:border-indigo-600">
+                                    </div>
+                                    <button onclick="checkDrillA()"
+                                        class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition shadow-sm">
+                                        Verificar
+                                    </button>
+                                    <button onclick="nextDrillA()"
+                                        class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition">
+                                        Próximo →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="drillA-feedback" class="hidden p-3.5 rounded-2xl border text-xs sm:text-sm leading-relaxed"></div>
+                    </div>
+                </div>
+
+                <!-- Rodapé de Navegação da Página -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                    <button onclick="goToLearnPage(1)"
+                        class="px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition">
+                        ← Página Anterior: Potências de 10
+                    </button>
+                    <button onclick="goToLearnPage(3)"
+                        class="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-sm transition">
+                        Próxima Página: Anatomia a × 10<sup>n</sup> →
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- PÁGINA 3: ANATOMIA DA NOTAÇÃO CIENTÍFICA & TESTADOR   -->
+            <!-- ===================================================== -->
+            <div id="learn-page-3" class="learn-page hidden canva-card p-6 sm:p-8 space-y-7">
+                <div class="space-y-1">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-pink-100 text-pink-800">
+                        Página 3 de 4 • A Regra de Ouro
+                    </span>
+                    <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+                        O que é a Notação Científica?
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base">
+                        Um número racional positivo está escrito em notação científica quando tem a forma:
+                    </p>
+                </div>
+
+                <div class="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl flex flex-col lg:flex-row items-center justify-around gap-8">
+                    <!-- Expressão em destaque -->
+                    <div class="font-mono text-5xl sm:text-6xl font-extrabold tracking-tight flex items-start select-none">
+                        <span class="text-teal-300 underline decoration-teal-400/50 decoration-4 underline-offset-8">a</span>
+                        <span class="mx-4 text-slate-400">×</span>
+                        <span class="text-indigo-300 underline decoration-indigo-400/50 decoration-4 underline-offset-8">10</span>
+                        <span class="text-3xl sm:text-4xl text-pink-400 -mt-2 ml-0.5 underline decoration-pink-400/50 decoration-4 underline-offset-4">n</span>
+                    </div>
+
+                    <!-- Condições -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full lg:w-auto">
+                        <div class="bg-slate-800/90 border border-teal-500/40 p-4 rounded-2xl">
+                            <div class="text-teal-300 font-mono font-extrabold text-sm">Coeficiente (a)</div>
+                            <div class="font-mono text-lg font-bold mt-1">1 ≤ a &lt; 10</div>
+                            <p class="text-xs text-slate-300 mt-1">Tem apenas <strong>1 algarismo</strong> diferente de zero antes da vírgula.</p>
+                        </div>
+
+                        <div class="bg-slate-800/90 border border-indigo-500/40 p-4 rounded-2xl">
+                            <div class="text-indigo-300 font-mono font-extrabold text-sm">Potência de base 10</div>
+                            <div class="font-mono text-lg font-bold mt-1">Base = 10</div>
+                            <p class="text-xs text-slate-300 mt-1">A base da potência é obrigatoriamente <strong>10</strong> (nunca 100).</p>
+                        </div>
+
+                        <div class="bg-slate-800/90 border border-pink-500/40 p-4 rounded-2xl">
+                            <div class="text-pink-400 font-mono font-extrabold text-sm">Expoente (n)</div>
+                            <div class="font-mono text-lg font-bold mt-1">n ∈ ℤ</div>
+                            <p class="text-xs text-slate-300 mt-1">Número inteiro: <strong>n ≥ 0</strong> (7.º ano) ou <strong>n &lt; 0</strong> para números &lt; 1 (8.º ano).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MINI-VERIFICADOR INTERATIVO: ESTÁ EM NOTAÇÃO CIENTÍFICA? -->
+                <div class="bg-slate-50 p-5 sm:p-6 rounded-3xl border border-slate-200 space-y-4">
+                    <div class="space-y-1">
+                        <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[11px] font-extrabold uppercase tracking-wider">
+                            Mini-Verificador Interativo
+                        </span>
+                        <h3 class="font-display text-lg sm:text-xl font-extrabold text-slate-900">
+                            Está escrito em Notação Científica? Clica em cada expressão para testar!
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600">
+                            Analisa os casos clássicos das fichas do 7.º e 8.º anos e descobre quais cumprem todas as condições:
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="anatomy-checker-grid">
+                        <!-- Gerado por JS -->
+                    </div>
+                </div>
+
+                <!-- Rodapé de Navegação da Página -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                    <button onclick="goToLearnPage(2)"
+                        class="px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition">
+                        ← Página Anterior: Sentidos da Vírgula
+                    </button>
+                    <button onclick="goToLearnPage(4)"
+                        class="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-sm transition">
+                        Próxima Página: Simulador Visual da Vírgula →
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- PÁGINA 4: SIMULADOR VISUAL DA DESLOCAÇÃO DA VÍRGULA   -->
+            <!-- ===================================================== -->
+            <div id="learn-page-4" class="learn-page hidden canva-card p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                    <div class="space-y-1">
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-800">
+                            Página 4 de 4 • Simulador Interativo da Vírgula
+                        </span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+                            Vê a vírgula andar e o expoente mudar!
+                        </h2>
+                        <p class="text-sm text-slate-600">
+                            A marca <strong class="text-indigo-600">Original</strong> fica fixa no início e a vírgula <strong class="text-pink-600">Nova</strong> desloca-se. Conta os arcos numerados para confirmar o expoente!
+                        </p>
+                    </div>
+
+                    <!-- Caixa de entrada personalizada -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <input type="text" id="sim-custom-input" value="150000000"
+                            onkeydown="if(event.key==='Enter') loadSimFromInput()"
+                            placeholder="Ex: 4540000000 ou 0,000045"
+                            class="px-3.5 py-2.5 rounded-xl border border-slate-300 font-mono text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-52 sm:w-60">
+                        <button onclick="loadSimFromInput()"
+                            class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold transition shadow-sm">
+                            Carregar Número
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cartões Clicáveis com Exemplos Reais (7.º e 8.º Anos) -->
+                <div class="space-y-2.5">
+                    <div class="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Exemplos reais das ciências (clica num cartão para experimentar no simulador):
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                        <button onclick="loadSimPreset('150000000')"
+                            class="p-3 rounded-2xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-left transition group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-800 group-hover:text-indigo-900">Distância Terra–Sol</span>
+                                <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-extrabold">7.º Ano</span>
+                            </div>
+                            <div class="font-mono text-xs font-bold text-slate-600 mt-1">150 000 000 km</div>
+                        </button>
+
+                        <button onclick="loadSimPreset('4540000000')"
+                            class="p-3 rounded-2xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-left transition group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-800 group-hover:text-indigo-900">Idade da Terra</span>
+                                <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-extrabold">7.º Ano</span>
+                            </div>
+                            <div class="font-mono text-xs font-bold text-slate-600 mt-1">4 540 000 000 anos</div>
+                        </button>
+
+                        <button onclick="loadSimPreset('9500000000000')"
+                            class="p-3 rounded-2xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-left transition group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-800 group-hover:text-indigo-900">Ano-luz (9,5 × 10<sup>12</sup> km)</span>
+                                <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-extrabold">7.º Ano</span>
+                            </div>
+                            <div class="font-mono text-xs font-bold text-slate-600 mt-1">9 500 000 000 000 km</div>
+                        </button>
+
+                        <button onclick="loadSimPreset('73490000000000000000000')"
+                            class="p-3 rounded-2xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-left transition group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-800 group-hover:text-indigo-900">Massa da Lua</span>
+                                <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-extrabold">7.º Ano</span>
+                            </div>
+                            <div class="font-mono text-xs font-bold text-slate-600 mt-1">73 490 000…000 kg (22 casas)</div>
+                        </button>
+
+                        <button onclick="loadSimPreset('0,0000025')"
+                            class="p-3 rounded-2xl bg-slate-50 hover:bg-pink-50 border border-slate-200 hover:border-pink-300 text-left transition group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-800 group-hover:text-pink-900">Tamanho de um Micróbio</span>
+                                <span class="px-2 py-0.5 rounded bg-pink-100 text-pink-800 text-[10px] font-extrabold">8.º Ano</span>
+                            </div>
+                            <div class="font-mono text-xs font-bold text-slate-600 mt-1">0,0000025 m</div>
+                        </button>
+
+                        <button onclick="loadSimPreset('0,00000000000000000000000000167')"
+                            class="p-3 rounded-2xl bg-slate-50 hover:bg-pink-50 border border-slate-200 hover:border-pink-300 text-left transition group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-800 group-hover:text-pink-900">Átomo de Hidrogénio</span>
+                                <span class="px-2 py-0.5 rounded bg-pink-100 text-pink-800 text-[10px] font-extrabold">8.º Ano</span>
+                            </div>
+                            <div class="font-mono text-xs font-bold text-slate-600 mt-1">0,000…0167 kg (27 casas)</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PALCO INTERATIVO DO SIMULADOR -->
+                <div id="sim-stage" class="p-5 sm:p-7 rounded-3xl border-2 transition-colors duration-300 bg-amber-50/70 border-amber-300 space-y-6">
+                    <!-- Barra de Estado e Expressão Atual -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <span id="sim-status-badge" class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold bg-amber-200 text-amber-950">
+                                Coeficiente ≥ 10 — Move a vírgula para a esquerda
+                            </span>
+                            <span id="sim-steps-badge" class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold bg-indigo-100 text-indigo-900 border border-indigo-200">
+                                0 casas deslocadas
+                            </span>
+                        </div>
+
+                        <div class="bg-white px-5 py-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-baseline gap-2 self-start md:self-auto">
+                            <span class="text-xs font-bold text-slate-400 uppercase mr-1">Escrita atual:</span>
+                            <span id="sim-current-coeff" class="font-mono text-2xl sm:text-3xl font-extrabold text-slate-900">150 000 000</span>
+                            <span class="font-mono text-xl font-bold text-slate-400">×</span>
+                            <span class="font-mono text-2xl sm:text-3xl font-extrabold text-indigo-600">10<sup id="sim-current-exp" class="text-pink-600">0</sup></span>
+                        </div>
+                    </div>
+
+                    <!-- Legenda Visual Original vs Nova -->
+                    <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-bold">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono">Orig</span>
+                            <span class="text-slate-700">Posição inicial da vírgula</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded bg-pink-600 text-white font-mono">Nova</span>
+                            <span class="text-slate-700">Posição atual da vírgula</span>
+                        </div>
+                        <div class="text-slate-500">
+                            (Usa os botões abaixo ou clica entre dois algarismos)
+                        </div>
+                    </div>
+
+                    <!-- GRELHA FIXA DE DÍGITOS + ARCOS SVG DINÂMICOS -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-inner overflow-x-auto custom-scroll text-center">
+                        <div id="sim-grid-wrapper" class="relative inline-block pt-14 pb-10 px-3 select-none">
+                            <svg id="sim-arcs-svg" class="absolute top-0 left-0 pointer-events-none overflow-visible" height="62"></svg>
+                            <div id="sim-cells-row" class="flex items-center"></div>
+                        </div>
+                    </div>
+
+                    <!-- Botões de Controlo -->
+                    <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                        <button onclick="moveSimComma(-1)"
+                            class="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold text-sm transition shadow-md flex items-center gap-2.5">
+                            <span class="text-teal-400 text-lg">←</span>
+                            <div class="text-left">
+                                <div>Mover Esquerda</div>
+                                <div class="text-[11px] font-mono text-teal-300">Expoente +1</div>
+                            </div>
+                        </button>
+
+                        <button onclick="autoSolveSim()"
+                            class="px-4 py-3 rounded-2xl bg-indigo-100 hover:bg-indigo-200 border border-indigo-300 text-indigo-900 font-extrabold text-xs sm:text-sm transition shadow-sm">
+                            Completar Notação Científica
+                        </button>
+
+                        <button onclick="resetSimComma()"
+                            class="px-4 py-3 rounded-2xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-xs sm:text-sm transition shadow-sm">
+                            Repor Início
+                        </button>
+
+                        <button onclick="moveSimComma(1)"
+                            class="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold text-sm transition shadow-md flex items-center gap-2.5">
+                            <div class="text-right">
+                                <div>Mover Direita</div>
+                                <div class="text-[11px] font-mono text-pink-400">Expoente −1</div>
+                            </div>
+                            <span class="text-pink-400 text-lg">→</span>
+                        </button>
+                    </div>
+
+                    <p id="sim-feedback-text" class="text-center text-sm text-slate-700 font-medium max-w-2xl mx-auto">
+                        Move a vírgula para a esquerda até ficar apenas um algarismo diferente de zero antes da vírgula.
+                    </p>
+                </div>
+
+                <!-- Rodapé de Navegação da Página -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                    <button onclick="goToLearnPage(3)"
+                        class="px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition">
+                        ← Página Anterior: Anatomia a × 10<sup>n</sup>
+                    </button>
+                    <button onclick="switchTab('laboratorio')"
+                        class="px-5 py-2.5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm shadow-sm transition">
+                        Ir para o Laboratório & Calculadora →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- SEPARADOR 2: LABORATÓRIO & CALCULADORA                    -->
+        <!-- ========================================================= -->
+        <section id="panel-laboratorio" class="tab-panel hidden space-y-7">
+
+            <!-- CONVERSOR BIDIRECIONAL PASSO A PASSO -->
+            <div class="canva-card p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-800 mb-1">
+                            Conversor Bidirecional
+                        </span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+                            Transforma e vê a explicação passo a passo
+                        </h2>
+                    </div>
+
+                    <div class="flex gap-1.5 bg-slate-100 p-1.5 rounded-2xl">
+                        <button onclick="setConvMode('dec2sci')" id="btn-mode-dec2sci"
+                            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-sm transition">
+                            Decimal → Notação Científica
+                        </button>
+                        <button onclick="setConvMode('sci2dec')" id="btn-mode-sci2dec"
+                            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition">
+                            Notação Científica → Decimal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MODO A: DECIMAL -> NOTAÇÃO CIENTÍFICA -->
+                <div id="conv-box-dec2sci" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div class="md:col-span-2 space-y-1.5">
+                            <label for="dec2sci-input" class="block text-sm font-bold text-slate-700">
+                                Introduz um número racional positivo na forma decimal:
+                            </label>
+                            <input type="text" id="dec2sci-input" value="234050" oninput="runDecToSci()"
+                                placeholder="Ex: 234050 ou 0,00048"
+                                class="w-full px-4 py-3 rounded-2xl border border-slate-300 font-mono text-lg font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button onclick="setDec2SciSample('4540000000')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-100 text-xs font-mono font-bold text-slate-700">4 540 000 000</button>
+                            <button onclick="setDec2SciSample('234000,35')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-100 text-xs font-mono font-bold text-slate-700">234000,35</button>
+                            <button onclick="setDec2SciSample('0,000072')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-100 text-xs font-mono font-bold text-slate-700">0,000072</button>
+                        </div>
+                    </div>
+
+                    <div id="dec2sci-result" class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+                        <!-- Gerado por JS -->
+                    </div>
+                </div>
+
+                <!-- MODO B: NOTAÇÃO CIENTÍFICA -> DECIMAL -->
+                <div id="conv-box-sci2dec" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                        <div class="space-y-1.5">
+                            <label for="sci2dec-coeff" class="block text-sm font-bold text-slate-700">
+                                Coeficiente <span class="font-mono text-teal-700">a</span> (1 ≤ a &lt; 10):
+                            </label>
+                            <input type="text" id="sci2dec-coeff" value="9,5" oninput="runSciToDec()"
+                                placeholder="Ex: 9,5"
+                                class="w-full px-4 py-3 rounded-2xl border border-slate-300 font-mono text-lg font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label for="sci2dec-exp" class="block text-sm font-bold text-slate-700">
+                                Expoente inteiro <span class="font-mono text-pink-600">n</span>:
+                            </label>
+                            <input type="number" id="sci2dec-exp" value="12" min="-20" max="20" oninput="runSciToDec()"
+                                class="w-full px-4 py-3 rounded-2xl border border-slate-300 font-mono text-lg font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button onclick="setSci2DecSample('9,5', 12)" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-100 text-xs font-mono font-bold text-slate-700">9,5 × 10¹²</button>
+                            <button onclick="setSci2DecSample('4,2', 6)" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-100 text-xs font-mono font-bold text-slate-700">4,2 × 10⁶</button>
+                            <button onclick="setSci2DecSample('3,4', -5)" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-100 text-xs font-mono font-bold text-slate-700">3,4 × 10⁻⁵</button>
+                        </div>
+                    </div>
+
+                    <div id="sci2dec-result" class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+                        <!-- Gerado por JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIMULADOR DE VISOR DE CALCULADORA CIENTÍFICA -->
+            <div class="canva-card p-6 sm:p-8 space-y-6">
+                <div class="space-y-1.5">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">
+                        A Notação Científica e a Calculadora
+                    </span>
+                    <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+                        Como ler o visor da calculadora científica?
+                    </h2>
+                    <p class="text-sm sm:text-base text-slate-600">
+                        Quando um número tem demasiados algarismos para caber no ecrã, a calculadora usa a letra <strong class="font-mono text-slate-900">E</strong> (ou <strong class="font-mono text-slate-900">×10<sup>x</sup></strong>) para substituir <strong class="font-mono text-indigo-700">× 10<sup>…</sup></strong>.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Corpo da Calculadora -->
+                    <div class="lg:col-span-6 bg-slate-800 p-6 rounded-3xl shadow-xl border-4 border-slate-700 space-y-5">
+                        <div class="flex items-center justify-between text-xs text-slate-400 font-bold tracking-wider uppercase">
+                            <span>CASIO / TI • SCI MODE</span>
+                            <span class="px-2 py-0.5 rounded bg-slate-700 text-teal-300 font-mono">SCI</span>
+                        </div>
+
+                        <!-- Visor LCD -->
+                        <div class="lcd-screen p-4 sm:p-5 rounded-2xl border-2 border-slate-600 space-y-2">
+                            <div class="flex justify-between text-[11px] font-bold opacity-75">
+                                <span>INPUT</span>
+                                <span id="calc-lcd-input" class="truncate max-w-[220px]">1340000000000</span>
+                            </div>
+                            <div class="text-right text-2xl sm:text-4xl font-extrabold tracking-tight overflow-x-auto" id="calc-lcd-output">
+                                1.34E12
+                            </div>
+                        </div>
+
+                        <!-- Input e Botões de Exemplos -->
+                        <div class="space-y-3">
+                            <div class="flex gap-2">
+                                <input type="text" id="calc-custom-input" value="1.34E12"
+                                    oninput="updateCalcDisplay(this.value)"
+                                    placeholder="Ex: 1.34E12, 4.5e-08 ou 150000000"
+                                    class="flex-grow px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-600 text-white font-mono text-sm font-bold focus:outline-none focus:border-teal-400">
+                                <button onclick="setCalcPreset('1.34E12')" class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-mono text-xs font-extrabold">
+                                    AC
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+                                <button onclick="setCalcPreset('1.34E12')" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-mono text-xs font-bold transition">
+                                    1.34E12
+                                </button>
+                                <button onclick="setCalcPreset('1.34e+12')" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-mono text-xs font-bold transition">
+                                    1.34e+12
+                                </button>
+                                <button onclick="setCalcPreset('4.5e-08')" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-mono text-xs font-bold transition">
+                                    4.5e-08
+                                </button>
+                                <button onclick="setCalcPreset('150000000')" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-mono text-xs font-bold transition">
+                                    150000000
+                                </button>
+                                <button onclick="setCalcPreset('1.67E-27')" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-mono text-xs font-bold transition">
+                                    1.67E-27
+                                </button>
+                                <button onclick="setCalcPreset('352050000')" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-mono text-xs font-bold transition">
+                                    352 050 000
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tradução Matemática -->
+                    <div class="lg:col-span-6 bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4">
+                        <h3 class="font-display text-lg font-extrabold text-slate-900">
+                            Como se escreve no caderno?
+                        </h3>
+                        <div id="calc-translation-box" class="space-y-3">
+                            <!-- Gerado por JS -->
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-950 leading-relaxed">
+                            <strong>Atenção nos testes:</strong> Nunca copies <span class="font-mono font-bold">1.34E12</span> para a folha de resposta! Traduz sempre o <span class="font-mono font-bold">E</span> por <span class="font-mono font-bold">× 10<sup>expoente</sup></span> e usa vírgula decimal (<span class="font-mono font-bold">1,34 × 10<sup>12</sup></span>).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- SEPARADOR 3: DESAFIO DE ORDENAÇÃO                         -->
+        <!-- ========================================================= -->
+        <section id="panel-ordenacao" class="tab-panel hidden space-y-6">
+            <div class="canva-card p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                    <div class="space-y-1">
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-pink-100 text-pink-800">
+                            Comparar e Ordenar
+                        </span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+                            Ordena por Ordem Crescente (do menor para o maior)
+                        </h2>
+                        <p class="text-sm text-slate-600">
+                            <strong>Regra 1:</strong> Compara os expoentes (quem tiver maior expoente é maior). <strong>Regra 2:</strong> Se os expoentes forem iguais, compara os coeficientes. <em>Cuidado com números que não estão na forma canónica!</em>
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="loadSortLevel('ficha7')" id="sort-btn-ficha7"
+                            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm transition">
+                            Exercício 7.º Ano (Ficha)
+                        </button>
+                        <button onclick="loadSortLevel('ano8')" id="sort-btn-ano8"
+                            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+                            Nível 8.º Ano (ℤ)
+                        </button>
+                        <button onclick="loadSortLevel('random')" id="sort-btn-random"
+                            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-teal-600 text-white hover:bg-teal-700 shadow-sm transition">
+                            Novo Conjunto Aleatório
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Área Interativa de Ordenação (Banco + Slots 1.º a 7.º) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Banco de Cartões Disponíveis -->
+                    <div class="lg:col-span-5 bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">
+                                Números para Ordenar
+                            </h3>
+                            <span class="text-xs text-slate-500 font-medium">Clica para colocar</span>
+                        </div>
+                        <div id="sort-bank-list" class="flex flex-wrap gap-2.5 min-h-[120px] content-start">
+                            <!-- Gerado por JS -->
+                        </div>
+                    </div>
+
+                    <!-- Lista Ordenada (1.º ao 7.º) -->
+                    <div class="lg:col-span-7 bg-indigo-50/40 p-5 rounded-2xl border-2 border-dashed border-indigo-200 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-extrabold text-indigo-950 uppercase tracking-wide">
+                                A Tua Ordem Crescente (1.º = Menor → 7.º = Maior)
+                            </h3>
+                            <button onclick="clearSortSlots()" class="text-xs font-bold text-slate-500 hover:text-rose-600 transition">
+                                Limpar Tudo
+                            </button>
+                        </div>
+
+                        <div id="sort-slots-list" class="space-y-2">
+                            <!-- Gerado por JS -->
+                        </div>
+
+                        <div class="pt-3 flex flex-wrap items-center justify-between gap-3">
+                            <button onclick="checkSortOrder()"
+                                class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md transition">
+                                Verificar Ordem
+                            </button>
+                            <span class="text-xs text-slate-500">
+                                Dica: Converte mentalmente <span class="font-mono font-bold">30 × 10<sup>10</sup></span> e <span class="font-mono font-bold">0,95 × 10<sup>12</sup></span> antes de comparar!
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback da Ordenação -->
+                <div id="sort-feedback" class="hidden p-5 rounded-2xl border space-y-3"></div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- SEPARADOR 4: QUIZ INTERATIVO (7.º E 8.º ANOS)             -->
+        <!-- ========================================================= -->
+        <section id="panel-quiz" class="tab-panel hidden space-y-6">
+            <div class="canva-card p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-purple-100 text-purple-800 mb-1">
+                            Avaliação Formativa
+                        </span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+                            Testa os teus conhecimentos
+                        </h2>
+                    </div>
+
+                    <div class="flex gap-1.5 bg-slate-100 p-1.5 rounded-2xl">
+                        <button onclick="startQuiz('7ano')" id="quiz-lvl-7ano"
+                            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-sm transition">
+                            Nível 7.º Ano (ℕ₀)
+                        </button>
+                        <button onclick="startQuiz('8ano')" id="quiz-lvl-8ano"
+                            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition">
+                            Nível 8.º Ano (ℤ)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Barra de Progresso e Pontuação -->
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-extrabold text-slate-600">
+                        <span id="quiz-progress-label">Pergunta 1 de 8</span>
+                        <span id="quiz-score-label" class="text-indigo-700">Pontuação: 0 / 8</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="quiz-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-pink-500 transition-all duration-300" style="width: 12.5%"></div>
+                    </div>
+                </div>
+
+                <!-- Cartão da Pergunta -->
+                <div id="quiz-stage" class="space-y-5">
+                    <!-- Gerado por JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="border-t border-slate-200 bg-white py-4 px-4 text-center text-xs text-slate-500">
+        Recurso Educativo Interativo • Matemática 7.º e 8.º Anos • Notação Científica (<span class="font-mono">a × 10<sup>n</sup></span>)
+    </footer>
+
+    <script>
+        // =============================================================
+        // NAVEGAÇÃO PRINCIPAL E SLIDES DE APRENDIZAGEM
+        // =============================================================
+        let activeMainTab = 'aprender';
+        let currentLearnPage = 1;
+
+        const learnPageMeta = {
+            1: { title: "Potências de Base 10 (10^k e 10^-k)", pct: "25%" },
+            2: { title: "Os Dois Sentidos da Vírgula & Treino", pct: "50%" },
+            3: { title: "Anatomia da Notação Científica (a × 10^n)", pct: "75%" },
+            4: { title: "Simulador Visual da Vírgula & Casos Reais", pct: "100%" }
+        };
+
+        function switchTab(tabName) {
+            activeMainTab = tabName;
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+            const activePanel = document.getElementById(`panel-${tabName}`);
+            if (activePanel) activePanel.classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-white/60";
+            });
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-indigo-600 text-white shadow-sm";
+            }
+
+            if (tabName === 'aprender' && currentLearnPage === 4) {
+                requestAnimationFrame(drawSimulatorArcs);
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // =============================================================
+        // SEPARADOR 1 — PASSO 1: POTÊNCIAS DE BASE 10 (-9 a +9)
+        // =============================================================
+        let currentPow10 = 0;
+        const powNamesPos = {
+            0: "uma unidade",
+            1: "uma dezena",
+            2: "uma centena",
+            3: "um milhar",
+            4: "dez milhares",
+            5: "cem milhares",
+            6: "um milhão",
+            7: "dez milhões",
+            8: "cem milhões",
+            9: "mil milhões"
+        };
+        const powNamesNeg = {
+            1: "uma décima",
+            2: "uma centésima",
+            3: "uma milésima",
+            4: "uma décima de milésima",
+            5: "uma centésima de milésima",
+            6: "uma milionésima",
+            7: "uma décima de milionésima",
+            8: "uma centésima de milionésima",
+            9: "uma milésima de milionésima"
+        };
+
+        function setPow10(val) {
+            currentPow10 = Math.max(-9, Math.min(9, parseInt(val, 10) || 0));
+            document.getElementById('pow10-slider').value = currentPow10;
+
+            const kBadge = document.getElementById('pow10-k-badge');
+            const exprEl = document.getElementById('pow10-expr');
+            const fmtEl = document.getElementById('pow10-formatted');
+            const pillEl = document.getElementById('pow10-rule-pill');
+            const boxEl = document.getElementById('pow10-display-box');
+            const blocksEl = document.getElementById('pow10-blocks');
+            const captionEl = document.getElementById('pow10-caption');
+
+            kBadge.textContent = currentPow10 > 0 ? `+${currentPow10}` : `${currentPow10}`;
+            exprEl.innerHTML = `10<sup>${currentPow10}</sup>`;
+
+            if (currentPow10 === 0) {
+                boxEl.className = "lg:col-span-7 bg-gradient-to-br from-amber-50/80 via-white to-slate-50 p-6 rounded-2xl border border-amber-200 space-y-4 transition-colors";
+                exprEl.className = "font-mono text-3xl sm:text-4xl font-extrabold text-amber-800";
+                kBadge.className = "px-3 py-1 rounded-xl bg-amber-50 border border-amber-300 font-mono text-lg font-extrabold text-amber-900 shadow-sm";
+                pillEl.className = "px-3 py-1 rounded-full text-xs font-extrabold bg-amber-200 text-amber-950";
+                pillEl.textContent = "Ponto de partida (0 zeros)";
+                fmtEl.textContent = "1";
+
+                blocksEl.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-11 rounded-xl bg-amber-600 text-white font-mono text-xl font-extrabold flex items-center justify-center shadow-sm">1</div>
+                        <span class="text-[10px] font-extrabold text-amber-900 mt-1">Unidade</span>
+                    </div>
+                `;
+                captionEl.innerHTML = `Ponto de partida: <strong>10<sup>0</sup> = 1</strong> (sem zeros à direita e sem casas decimais). Clica em <strong>+ Aumentar</strong> para ver os zeros à direita ou em <strong>− Diminuir</strong> para ver as casas decimais.`;
+            } else if (currentPow10 > 0) {
+                boxEl.className = "lg:col-span-7 bg-gradient-to-br from-indigo-50 via-white to-teal-50/50 p-6 rounded-2xl border border-indigo-200 space-y-4 transition-colors";
+                exprEl.className = "font-mono text-3xl sm:text-4xl font-extrabold text-indigo-700";
+                kBadge.className = "px-3 py-1 rounded-xl bg-indigo-50 border border-indigo-300 font-mono text-lg font-extrabold text-indigo-800 shadow-sm";
+                pillEl.className = "px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-900";
+                pillEl.textContent = `Expoente +${currentPow10} → ${currentPow10} ${currentPow10 === 1 ? 'zero' : 'zeros'}`;
+
+                const raw = '1' + '0'.repeat(currentPow10);
+                fmtEl.textContent = formatPtSpaces(raw);
+
+                let blocksHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="w-9 h-10 rounded-xl bg-indigo-600 text-white font-mono text-lg font-extrabold flex items-center justify-center shadow-sm">1</div>
+                        <span class="text-[10px] font-bold text-indigo-700 mt-1">Início</span>
+                    </div>
+                `;
+                for (let i = 1; i <= currentPow10; i++) {
+                    blocksHTML += `
+                        <div class="flex flex-col items-center">
+                            <div class="w-9 h-10 rounded-xl bg-white border-2 border-indigo-400 text-slate-900 font-mono text-lg font-extrabold flex items-center justify-center shadow-sm">0</div>
+                            <span class="text-[10px] font-extrabold text-indigo-700 mt-1">${i}.º</span>
+                        </div>
+                    `;
+                }
+                blocksEl.innerHTML = blocksHTML;
+                captionEl.innerHTML = `Expoente positivo <strong>+${currentPow10}</strong>: o algarismo <strong>1</strong> é seguido de exatamente <strong>${currentPow10} ${currentPow10 === 1 ? 'zero' : 'zeros'}</strong> à direita (${powNamesPos[currentPow10]}).`;
+            } else {
+                const absK = Math.abs(currentPow10);
+                boxEl.className = "lg:col-span-7 bg-gradient-to-br from-pink-50 via-white to-purple-50/50 p-6 rounded-2xl border border-pink-200 space-y-4 transition-colors";
+                exprEl.className = "font-mono text-3xl sm:text-4xl font-extrabold text-pink-700";
+                kBadge.className = "px-3 py-1 rounded-xl bg-pink-50 border border-pink-300 font-mono text-lg font-extrabold text-pink-800 shadow-sm";
+                pillEl.className = "px-3 py-1 rounded-full text-xs font-extrabold bg-pink-100 text-pink-900";
+                pillEl.textContent = `Expoente −${absK} → ${absK} ${absK === 1 ? 'casa decimal' : 'casas decimais'}`;
+
+                const decStr = '0,' + '0'.repeat(absK - 1) + '1';
+                fmtEl.textContent = decStr;
+
+                let blocksHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="w-9 h-10 rounded-xl bg-slate-200 text-slate-700 font-mono text-lg font-extrabold flex items-center justify-center">0</div>
+                        <span class="text-[10px] font-bold text-slate-500 mt-1">Int.</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-6 h-10 rounded-lg bg-pink-600 text-white font-mono text-xl font-extrabold flex items-center justify-center shadow-sm">,</div>
+                        <span class="text-[10px] font-bold text-pink-700 mt-1">Vírg.</span>
+                    </div>
+                `;
+                for (let i = 1; i < absK; i++) {
+                    blocksHTML += `
+                        <div class="flex flex-col items-center">
+                            <div class="w-9 h-10 rounded-xl bg-white border-2 border-pink-300 text-slate-800 font-mono text-lg font-extrabold flex items-center justify-center shadow-sm">0</div>
+                            <span class="text-[10px] font-extrabold text-pink-700 mt-1">${i}.ª</span>
+                        </div>
+                    `;
+                }
+                blocksHTML += `
+                    <div class="flex flex-col items-center">
+                        <div class="w-9 h-10 rounded-xl bg-pink-600 text-white font-mono text-lg font-extrabold flex items-center justify-center shadow-sm">1</div>
+                        <span class="text-[10px] font-extrabold text-pink-800 mt-1">${absK}.ª</span>
+                    </div>
+                `;
+                blocksEl.innerHTML = blocksHTML;
+                captionEl.innerHTML = `Expoente negativo <strong>−${absK}</strong>: existem exatamente <strong>${absK} ${absK === 1 ? 'casa decimal' : 'casas decimais'}</strong> após a vírgula (${powNamesNeg[absK]}).`;
+            }
+        }
+
+        function goToLearnPage(pageNum) {
+            currentLearnPage = Math.max(1, Math.min(4, pageNum));
+
+            document.querySelectorAll('.learn-page').forEach(p => p.classList.add('hidden'));
+            const activePage = document.getElementById(`learn-page-${currentLearnPage}`);
+            if (activePage) activePage.classList.remove('hidden');
+
+            document.getElementById('learn-step-pill').textContent = `Passo ${currentLearnPage} de 4`;
+            document.getElementById('learn-step-subtitle').textContent = learnPageMeta[currentLearnPage].title;
+            document.getElementById('learn-progress-bar').style.width = learnPageMeta[currentLearnPage].pct;
+
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`learn-nav-${i}`);
+                const badge = btn.querySelector('span');
+                if (i === currentLearnPage) {
+                    btn.className = "learn-nav-btn p-3 rounded-2xl border-2 border-indigo-600 bg-indigo-50/80 text-left transition flex items-center gap-2.5 shadow-sm";
+                    badge.className = "w-7 h-7 rounded-xl bg-indigo-600 text-white font-mono text-xs font-extrabold flex items-center justify-center flex-shrink-0";
+                } else {
+                    btn.className = "learn-nav-btn p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-300 text-left transition flex items-center gap-2.5";
+                    badge.className = "w-7 h-7 rounded-xl bg-slate-200 text-slate-700 font-mono text-xs font-extrabold flex items-center justify-center flex-shrink-0";
+                }
+            }
+
+            if (currentLearnPage === 4) {
+                requestAnimationFrame(drawSimulatorArcs);
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (activeMainTab !== 'aprender') return;
+            const tag = document.activeElement?.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+            if (e.key === 'ArrowRight' && currentLearnPage < 4) {
+                goToLearnPage(currentLearnPage + 1);
+            } else if (e.key === 'ArrowLeft' && currentLearnPage > 1) {
+                goToLearnPage(currentLearnPage - 1);
+            }
+        });
+
+        function formatPtSpaces(numStr) {
+            const parts = numStr.split(',');
+            const intGrouped = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            return parts.length > 1 ? `${intGrouped},${parts[1]}` : intGrouped;
+        }
+
+        function formatSciHTML(coeffStr, exp) {
+            return `${coeffStr} × 10<sup>${exp}</sup>`;
+        }
+
+        // =============================================================
+        // SEPARADOR 1 — PÁGINA 3: MINI-VERIFICADOR DE NOTAÇÃO CIENTÍFICA
+        // =============================================================
+        const anatomyChecks = [
+            {
+                expr: "32,5 × 10<sup>5</sup>",
+                valid: false,
+                reason: "Não está! O coeficiente <strong>32,5 ≥ 10</strong> (tem 2 algarismos antes da vírgula). Forma correta: <strong>3,25 × 10<sup>6</sup></strong>."
+            },
+            {
+                expr: "0,325 × 10<sup>7</sup>",
+                valid: false,
+                reason: "Não está! O coeficiente <strong>0,325 &lt; 1</strong> (começa por zero). Forma correta: <strong>3,25 × 10<sup>6</sup></strong>."
+            },
+            {
+                expr: "3,25 × 10<sup>6</sup>",
+                valid: true,
+                reason: "Está em Notação Científica! Cumpre <strong>1 ≤ 3,25 &lt; 10</strong>, base <strong>10</strong> e expoente inteiro <strong>6</strong>."
+            },
+            {
+                expr: "30 × 10<sup>10</sup>",
+                valid: false,
+                reason: "Não está! Como <strong>30 ≥ 10</strong>, temos de escrever <strong>3 × 10<sup>11</sup></strong>."
+            },
+            {
+                expr: "0,95 × 10<sup>12</sup>",
+                valid: false,
+                reason: "Não está! Como <strong>0,95 &lt; 1</strong>, deslocamos a vírgula para a direita: <strong>9,5 × 10<sup>11</sup></strong>."
+            },
+            {
+                expr: "1,67 × 10<sup>−27</sup>",
+                valid: true,
+                reason: "Está em Notação Científica (8.º ano)! Cumpre <strong>1 ≤ 1,67 &lt; 10</strong> e expoente inteiro <strong>−27</strong>."
+            }
+        ];
+
+        function renderAnatomyChecker() {
+            const grid = document.getElementById('anatomy-checker-grid');
+            if (!grid) return;
+            grid.innerHTML = anatomyChecks.map((item, idx) => `
+                <button onclick="revealAnatomyItem(${idx})" id="anat-card-${idx}"
+                    class="p-4 rounded-2xl bg-white hover:border-indigo-400 border-2 border-slate-200 text-left transition shadow-sm space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="font-mono text-base sm:text-lg font-extrabold text-slate-900">${item.expr}</span>
+                        <span id="anat-badge-${idx}" class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-slate-100 text-slate-600">
+                            Testar
+                        </span>
+                    </div>
+                    <p id="anat-desc-${idx}" class="text-xs text-slate-500">
+                        Clica para verificar se cumpre <span class="font-mono">1 ≤ a &lt; 10</span>.
+                    </p>
+                </button>
+            `).join('');
+        }
+
+        function revealAnatomyItem(idx) {
+            const item = anatomyChecks[idx];
+            const card = document.getElementById(`anat-card-${idx}`);
+            const badge = document.getElementById(`anat-badge-${idx}`);
+            const desc = document.getElementById(`anat-desc-${idx}`);
+
+            if (item.valid) {
+                card.className = "p-4 rounded-2xl bg-emerald-50/90 border-2 border-emerald-400 text-left transition shadow-sm space-y-2";
+                badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-600 text-white";
+                badge.textContent = "✓ Sim";
+                desc.className = "text-xs text-emerald-950 leading-relaxed";
+            } else {
+                card.className = "p-4 rounded-2xl bg-rose-50/90 border-2 border-rose-400 text-left transition shadow-sm space-y-2";
+                badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-600 text-white";
+                badge.textContent = "✕ Não";
+                desc.className = "text-xs text-rose-950 leading-relaxed";
+            }
+            desc.innerHTML = item.reason;
+        }
+
+        function changePow10(delta) {
+            setPow10(currentPow10 + delta);
+        }
+
+        function checkPow10Practice() {
+            const expChecks = [
+                { id: '1a', expected: 3 },
+                { id: '1b', expected: 6 },
+                { id: '1c', expected: 9 },
+                { id: '1d', expected: -3 }
+            ];
+            expChecks.forEach(item => {
+                const val = parseInt(document.getElementById(`p10-q${item.id}`).value, 10);
+                const fb = document.getElementById(`p10-f${item.id}`);
+                if (isNaN(val)) {
+                    fb.className = "text-xs font-sans font-bold text-amber-600";
+                    fb.textContent = "Preenche";
+                } else if (val === item.expected) {
+                    fb.className = "text-xs font-sans font-extrabold text-emerald-600";
+                    fb.textContent = "✓ Certo!";
+                } else {
+                    fb.className = "text-xs font-sans font-extrabold text-rose-600";
+                    fb.textContent = `✕ É ${item.expected}`;
+                }
+            });
+
+            const valChecks = [
+                { id: '2a', expected: '10000', display: '10 000' },
+                { id: '2b', expected: '1', display: '1' },
+                { id: '2c', expected: '10000000', display: '10 000 000' },
+                { id: '2d', expected: '0,01', display: '0,01' }
+            ];
+            valChecks.forEach(item => {
+                const raw = document.getElementById(`p10-q${item.id}`).value.trim().replace(/\s+/g, '').replace('.', ',');
+                const fb = document.getElementById(`p10-f${item.id}`);
+                if (!raw) {
+                    fb.className = "text-xs font-sans font-bold text-amber-600";
+                    fb.textContent = "Preenche";
+                } else if (raw === item.expected) {
+                    fb.className = "text-xs font-sans font-extrabold text-emerald-600";
+                    fb.textContent = "✓ Certo!";
+                } else {
+                    fb.className = "text-xs font-sans font-extrabold text-rose-600";
+                    fb.textContent = `✕ É ${item.display}`;
+                }
+            });
+        }
+
+        // =============================================================
+        // SEPARADOR 1 — PASSO 2: TREINOS INTERATIVOS NOS DOIS SENTIDOS
+        // =============================================================
+        let drillYear = '7ano';
+        let drillAIndex = 0;
+        let drillBIndex = 0;
+
+        const drillsDecToSci = {
+            '7ano': [
+                {
+                    context: "A idade da Terra (Ficha 7.º Ano)",
+                    prompt: "4 540 000 000 anos",
+                    coeff: "4,54",
+                    exp: 9,
+                    expl: "Deslocamos a vírgula <strong>9 casas para a esquerda</strong> até ficar entre o 4 e o 5: <strong>4,54 × 10<sup>9</sup></strong>."
+                },
+                {
+                    context: "Energia de um sismo de magnitude 4 (Ficha 7.º Ano)",
+                    prompt: "2 500 000 000 000 joules",
+                    coeff: "2,5",
+                    exp: 12,
+                    expl: "Deslocamos a vírgula <strong>12 casas para a esquerda</strong> até ficar entre o 2 e o 5: <strong>2,5 × 10<sup>12</sup></strong>."
+                },
+                {
+                    context: "População portuguesa: 10,35 milhões (Ficha 7.º Ano)",
+                    prompt: "10 350 000 habitantes",
+                    coeff: "1,035",
+                    exp: 7,
+                    expl: "10,35 milhões = 10 350 000. A vírgula anda <strong>7 casas para a esquerda</strong>: <strong>1,035 × 10<sup>7</sup></strong>."
+                },
+                {
+                    context: "A massa da Lua (Ficha 7.º Ano)",
+                    prompt: "73 490 000 000 000 000 000 000 kg",
+                    coeff: "7,349",
+                    exp: 22,
+                    expl: "Contando os algarismos após o 7, deslocamos a vírgula <strong>22 casas para a esquerda</strong>: <strong>7,349 × 10<sup>22</sup></strong>."
+                },
+                {
+                    context: "Distância aproximada da Terra ao Sol",
+                    prompt: "150 000 000 km",
+                    coeff: "1,5",
+                    exp: 8,
+                    expl: "Deslocamos a vírgula <strong>8 casas para a esquerda</strong> até ficar entre o 1 e o 5: <strong>1,5 × 10<sup>8</sup></strong>."
+                }
+            ],
+            '8ano': [
+                {
+                    context: "Comprimento aproximado de uma bactéria (8.º Ano)",
+                    prompt: "0,0000045 m",
+                    coeff: "4,5",
+                    exp: -6,
+                    expl: "Como o número é menor que 1, a vírgula anda <strong>6 casas para a direita</strong> até ficar após o 4, logo o expoente é negativo: <strong>4,5 × 10<sup>−6</sup></strong>."
+                },
+                {
+                    context: "Massa aproximada de um átomo de hidrogénio (PPT 8.º Ano)",
+                    prompt: "0,00000000000000000000000000167 kg (26 zeros após a vírgula)",
+                    coeff: "1,67",
+                    exp: -27,
+                    expl: "A vírgula anda <strong>27 casas para a direita</strong> (26 zeros + o algarismo 1), dando expoente negativo: <strong>1,67 × 10<sup>−27</sup></strong>."
+                },
+                {
+                    context: "Diâmetro de um vírus",
+                    prompt: "0,000000082 m",
+                    coeff: "8,2",
+                    exp: -8,
+                    expl: "Deslocamos a vírgula <strong>8 casas para a direita</strong> até ficar entre o 8 e o 2: <strong>8,2 × 10<sup>−8</sup></strong>."
+                },
+                {
+                    context: "Espessura de uma folha de papel",
+                    prompt: "0,00012 m",
+                    coeff: "1,2",
+                    exp: -4,
+                    expl: "Deslocamos a vírgula <strong>4 casas para a direita</strong> até ficar entre o 1 e o 2: <strong>1,2 × 10<sup>−4</sup></strong>."
+                }
+            ]
+        };
+
+        const drillsSciToDec = {
+            '7ano': [
+                {
+                    context: "Distância de 1 ano-luz (Ficha 7.º Ano)",
+                    prompt: "9,5 × 10<sup>12</sup> km",
+                    answerNorm: "9500000000000",
+                    displayAns: "9 500 000 000 000",
+                    expl: "Expoente positivo (+12): a vírgula anda <strong>12 casas para a direita</strong>. O 5 ocupa 1 casa e acrescentamos 11 zeros: <strong>9 500 000 000 000</strong>."
+                },
+                {
+                    context: "Piscadelas de olhos por ano (Ficha 7.º Ano)",
+                    prompt: "4,2 × 10<sup>6</sup> vezes",
+                    answerNorm: "4200000",
+                    displayAns: "4 200 000",
+                    expl: "Expoente positivo (+6): a vírgula anda <strong>6 casas para a direita</strong>. O 2 ocupa 1 casa e acrescentamos 5 zeros: <strong>4 200 000</strong>."
+                },
+                {
+                    context: "Ordenado justo do professor (Ficha 7.º Ano)",
+                    prompt: "3,5205 × 10<sup>8</sup> euros",
+                    answerNorm: "352050000",
+                    displayAns: "352 050 000",
+                    expl: "Expoente positivo (+8): a vírgula anda <strong>8 casas para a direita</strong>. Os 4 algarismos decimais (5205) ocupam 4 casas e acrescentamos 4 zeros: <strong>352 050 000</strong>."
+                },
+                {
+                    context: "Distância média Terra-Sol (1 UA)",
+                    prompt: "1,496 × 10<sup>8</sup> km",
+                    answerNorm: "149600000",
+                    displayAns: "149 600 000",
+                    expl: "Expoente positivo (+8): deslocamos a vírgula <strong>8 casas para a direita</strong> (3 casas para 496 + 5 zeros): <strong>149 600 000</strong>."
+                }
+            ],
+            '8ano': [
+                {
+                    context: "Número muito pequeno (8.º Ano)",
+                    prompt: "3,4 × 10<sup>−5</sup>",
+                    answerNorm: "0,000034",
+                    displayAns: "0,000034",
+                    expl: "Expoente negativo (−5): a vírgula anda <strong>5 casas para a esquerda</strong>, acrescentando zeros à esquerda: <strong>0,000034</strong>."
+                },
+                {
+                    context: "Concentração química (8.º Ano)",
+                    prompt: "1,25 × 10<sup>−3</sup>",
+                    answerNorm: "0,00125",
+                    displayAns: "0,00125",
+                    expl: "Expoente negativo (−3): a vírgula anda <strong>3 casas para a esquerda</strong> a partir de 1,25: <strong>0,00125</strong>."
+                },
+                {
+                    context: "Raio atómico aproximado (8.º Ano)",
+                    prompt: "5,3 × 10<sup>−11</sup> m",
+                    answerNorm: "0,000000000053",
+                    displayAns: "0,000000000053",
+                    expl: "Expoente negativo (−11): deslocamos a vírgula <strong>11 casas para a esquerda</strong> (ficam 10 zeros após a vírgula): <strong>0,000000000053</strong>."
+                },
+                {
+                    context: "Tempo de processamento (8.º Ano)",
+                    prompt: "7,8 × 10<sup>−4</sup> s",
+                    answerNorm: "0,00078",
+                    displayAns: "0,00078",
+                    expl: "Expoente negativo (−4): deslocamos a vírgula <strong>4 casas para a esquerda</strong>: <strong>0,00078</strong>."
+                }
+            ]
+        };
+
+        function setDrillYear(year) {
+            drillYear = year;
+            drillAIndex = 0;
+            drillBIndex = 0;
+
+            document.getElementById('drill-year-7').className = year === '7ano'
+                ? "px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-indigo-600 text-white shadow-sm transition"
+                : "px-3.5 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition";
+            document.getElementById('drill-year-8').className = year === '8ano'
+                ? "px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-indigo-600 text-white shadow-sm transition"
+                : "px-3.5 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition";
+
+            renderDrillA();
+            renderDrillB();
+        }
+
+        function renderDrillA() {
+            const list = drillsDecToSci[drillYear];
+            const item = list[drillAIndex % list.length];
+            document.getElementById('drillA-counter').textContent = `Exercício ${(drillAIndex % list.length) + 1} de ${list.length}`;
+            document.getElementById('drillA-context').textContent = item.context;
+            document.getElementById('drillA-prompt').textContent = item.prompt;
+            document.getElementById('drillA-coeff').value = '';
+            document.getElementById('drillA-exp').value = '';
+            const fb = document.getElementById('drillA-feedback');
+            fb.classList.add('hidden');
+        }
+
+        function checkDrillA() {
+            const list = drillsDecToSci[drillYear];
+            const item = list[drillAIndex % list.length];
+            const rawCoeff = document.getElementById('drillA-coeff').value.trim().replace(/\s+/g, '').replace('.', ',');
+            const rawExp = parseInt(document.getElementById('drillA-exp').value, 10);
+            const fb = document.getElementById('drillA-feedback');
+            fb.classList.remove('hidden');
+
+            const normCoeff = rawCoeff.replace(/,0+$/, '');
+            const expectedCoeff = item.coeff.replace(/,0+$/, '');
+            const numericCoeff = parseFloat(rawCoeff.replace(',', '.'));
+
+            if (!rawCoeff || isNaN(rawExp)) {
+                fb.className = "p-3.5 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 text-xs sm:text-sm";
+                fb.innerHTML = "Preenche o <strong>coeficiente a</strong> e o <strong>expoente n</strong> antes de verificar.";
+                return;
+            }
+
+            if (normCoeff === expectedCoeff && rawExp === item.exp) {
+                fb.className = "p-3.5 rounded-2xl border bg-emerald-50 border-emerald-300 text-emerald-950 text-xs sm:text-sm";
+                fb.innerHTML = `<strong>✓ Excelente!</strong> ${item.expl}`;
+            } else if (!isNaN(numericCoeff) && (numericCoeff < 1 || numericCoeff >= 10)) {
+                fb.className = "p-3.5 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 text-xs sm:text-sm";
+                fb.innerHTML = `<strong>Atenção à regra do coeficiente!</strong> Escreveste <strong>${rawCoeff}</strong>, que não está entre 1 e 10 (<span class="font-mono">1 ≤ a &lt; 10</span>). ${item.expl}`;
+            } else {
+                fb.className = "p-3.5 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 text-xs sm:text-sm";
+                fb.innerHTML = `<strong>Quase!</strong> ${item.expl}`;
+            }
+        }
+
+        function nextDrillA() {
+            drillAIndex++;
+            renderDrillA();
+        }
+
+        function renderDrillB() {
+            const list = drillsSciToDec[drillYear];
+            const item = list[drillBIndex % list.length];
+            document.getElementById('drillB-counter').textContent = `Exercício ${(drillBIndex % list.length) + 1} de ${list.length}`;
+            document.getElementById('drillB-context').textContent = item.context;
+            document.getElementById('drillB-prompt').innerHTML = item.prompt;
+            document.getElementById('drillB-input').value = '';
+            const fb = document.getElementById('drillB-feedback');
+            fb.classList.add('hidden');
+        }
+
+        function checkDrillB() {
+            const list = drillsSciToDec[drillYear];
+            const item = list[drillBIndex % list.length];
+            const raw = document.getElementById('drillB-input').value.trim().replace(/\s+/g, '').replace('.', ',');
+            const fb = document.getElementById('drillB-feedback');
+            fb.classList.remove('hidden');
+
+            if (!raw) {
+                fb.className = "p-3.5 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 text-xs sm:text-sm";
+                fb.innerHTML = "Escreve o número na forma decimal (normal) antes de verificar.";
+                return;
+            }
+
+            const cleanedUser = raw.includes(',') ? raw.replace(/0+$/, '').replace(/,$/, '') : raw;
+            if (cleanedUser === item.answerNorm) {
+                fb.className = "p-3.5 rounded-2xl border bg-emerald-50 border-emerald-300 text-emerald-950 text-xs sm:text-sm";
+                fb.innerHTML = `<strong>✓ Correto!</strong> ${item.expl}`;
+            } else {
+                fb.className = "p-3.5 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 text-xs sm:text-sm";
+                fb.innerHTML = `<strong>Verifica a contagem de casas!</strong> A resposta certa é <strong class="font-mono">${item.displayAns}</strong>. ${item.expl}`;
+            }
+        }
+
+        function nextDrillB() {
+            drillBIndex++;
+            renderDrillB();
+        }
+
+        // =============================================================
+        // SEPARADOR 1 — PASSO 4: SIMULADOR VISUAL DA VÍRGULA
+        // =============================================================
+        let simDigits = "150000000";
+        let simOrigPos = 9;
+        let simCurrPos = 9;
+        let simExp = 0;
+
+        function parsePositiveDecimal(raw) {
+            const clean = raw.trim().replace(/\s+/g, '').replace(',', '.');
+            if (!/^\d+(\.\d+)?$/.test(clean)) return null;
+            const dotIdx = clean.indexOf('.');
+            let digits, pos;
+            if (dotIdx === -1) {
+                digits = clean;
+                pos = digits.length;
+            } else {
+                digits = clean.slice(0, dotIdx) + clean.slice(dotIdx + 1);
+                pos = dotIdx;
+            }
+            if (/^0+$/.test(digits)) return null;
+            return { digits, pos };
+        }
+
+        function loadSimPreset(valStr) {
+            document.getElementById('sim-custom-input').value = valStr;
+            loadSimFromInput();
+        }
+
+        function loadSimFromInput() {
+            const raw = document.getElementById('sim-custom-input').value;
+            const parsed = parsePositiveDecimal(raw);
+            if (!parsed) {
+                const stage = document.getElementById('sim-stage');
+                stage.className = "p-5 sm:p-7 rounded-3xl border-2 transition-colors duration-300 bg-rose-50 border-rose-300 space-y-6";
+                document.getElementById('sim-status-badge').className = "px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold bg-rose-200 text-rose-900";
+                document.getElementById('sim-status-badge').textContent = "Introduz um número positivo válido (ex: 4540000000 ou 0,000045)";
+                return;
+            }
+            simDigits = parsed.digits;
+            simOrigPos = parsed.pos;
+            simCurrPos = parsed.pos;
+            simExp = 0;
+            renderSimulator();
+        }
+
+        function resetSimComma() {
+            loadSimFromInput();
+        }
+
+        function autoSolveSim() {
+            const firstNonZero = simDigits.search(/[1-9]/);
+            if (firstNonZero === -1) return;
+            const targetPos = firstNonZero + 1;
+            const diff = targetPos - simCurrPos;
+            simCurrPos = targetPos;
+            simExp -= diff;
+            renderSimulator();
+        }
+
+        function moveSimComma(step) {
+            if (step === -1) {
+                if (simCurrPos === 0) {
+                    simDigits = '0' + simDigits;
+                    simOrigPos += 1;
+                } else {
+                    simCurrPos -= 1;
+                }
+                simExp += 1;
+            } else if (step === 1) {
+                if (simCurrPos === simDigits.length) {
+                    simDigits = simDigits + '0';
+                }
+                simCurrPos += 1;
+                simExp -= 1;
+            }
+            renderSimulator();
+        }
+
+        function jumpSimCommaTo(targetBoundary) {
+            const diff = targetBoundary - simCurrPos;
+            if (diff === 0) return;
+            simCurrPos = targetBoundary;
+            simExp -= diff;
+            renderSimulator();
+        }
+
+        function getSimBounds() {
+            const firstNonZero = simDigits.search(/[1-9]/);
+            let lastNonZero = simDigits.length - 1;
+            while (lastNonZero > firstNonZero && simDigits[lastNonZero] === '0') {
+                lastNonZero--;
+            }
+            const minB = Math.min(firstNonZero, simOrigPos, simCurrPos);
+            const maxB = Math.max(lastNonZero + 1, simOrigPos, simCurrPos);
+            const startIdx = simCurrPos === 0 ? 0 : Math.max(0, minB);
+            const endIdx = Math.max(startIdx + 1, maxB);
+            return { startIdx, endIdx };
+        }
+
+        function renderSimulator() {
+            const { startIdx, endIdx } = getSimBounds();
+            const minComma = Math.min(simOrigPos, simCurrPos);
+            const maxComma = Math.max(simOrigPos, simCurrPos);
+
+            // Valor atual do coeficiente
+            const intPart = simDigits.slice(0, simCurrPos).replace(/^0+(?=\d)/, '') || '0';
+            const decPart = simDigits.slice(simCurrPos).replace(/0+$/, '');
+            const coeffDisplay = decPart.length > 0 ? `${intPart},${decPart}` : intPart;
+            const coeffNumeric = parseFloat(intPart + (decPart ? '.' + decPart : ''));
+
+            document.getElementById('sim-current-coeff').textContent = coeffDisplay;
+            document.getElementById('sim-current-exp').textContent = simExp;
+
+            // Construir grelha fixa
+            let cellsHTML = '';
+            for (let b = startIdx; b <= endIdx; b++) {
+                const isOrig = (b === simOrigPos);
+                const isCurr = (b === simCurrPos);
+
+                cellsHTML += `
+                    <div id="sim-slot-${b}" onclick="jumpSimCommaTo(${b})"
+                         title="Clicar para colocar a vírgula aqui"
+                         class="comma-slot relative flex items-center justify-center group">
+                        ${isOrig ? `
+                            <div class="absolute -top-6 flex flex-col items-center z-20 pointer-events-none">
+                                <span class="px-1.5 py-0.5 rounded bg-indigo-600 text-white text-[9px] font-sans font-extrabold uppercase tracking-tight shadow-sm">Orig</span>
+                                <span class="w-0.5 h-2 bg-indigo-600"></span>
+                            </div>
+                        ` : ''}
+                        ${isOrig && !isCurr ? `
+                            <span class="h-10 border-l-2 border-dashed border-indigo-400"></span>
+                        ` : ''}
+                        ${isCurr ? `
+                            <span class="w-6 h-9 rounded-lg bg-pink-600 text-white font-mono text-2xl font-extrabold flex items-center justify-center shadow-md z-30">,</span>
+                            <span class="absolute -bottom-6 px-1.5 py-0.5 rounded bg-pink-600 text-white text-[9px] font-sans font-extrabold uppercase tracking-tight shadow-sm z-20">Nova</span>
+                        ` : (!isOrig ? `
+                            <span class="slot-hint opacity-0 transition-opacity w-2 h-2 rounded-full bg-pink-300"></span>
+                        ` : '')}
+                    </div>
+                `;
+
+                if (b < endIdx) {
+                    const digit = simDigits[b] || '0';
+                    const traversed = (b >= minComma && b < maxComma);
+                    cellsHTML += `
+                        <div class="digit-cell flex items-center justify-center rounded-xl font-mono text-2xl sm:text-3xl font-extrabold border ${
+                            traversed
+                                ? 'bg-indigo-50/90 border-indigo-300 text-indigo-950'
+                                : 'bg-slate-50 border-slate-200 text-slate-900'
+                        }">
+                            ${digit}
+                        </div>
+                    `;
+                }
+            }
+
+            document.getElementById('sim-cells-row').innerHTML = cellsHTML;
+
+            // Atualizar badge de deslocação
+            const delta = simOrigPos - simCurrPos; // > 0 esquerda, < 0 direita
+            const absSteps = Math.abs(delta);
+            const stepsBadge = document.getElementById('sim-steps-badge');
+            if (delta > 0) {
+                stepsBadge.className = "px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold bg-teal-100 text-teal-900 border border-teal-300";
+                stepsBadge.textContent = `${absSteps} ${absSteps === 1 ? 'casa' : 'casas'} para a esquerda → Expoente +${absSteps}`;
+            } else if (delta < 0) {
+                stepsBadge.className = "px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold bg-pink-100 text-pink-900 border border-pink-300";
+                stepsBadge.textContent = `${absSteps} ${absSteps === 1 ? 'casa' : 'casas'} para a direita → Expoente −${absSteps}`;
+            } else {
+                stepsBadge.className = "px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold bg-indigo-50 text-indigo-900 border border-indigo-200";
+                stepsBadge.textContent = "0 casas deslocadas (na posição original)";
+            }
+
+            // Estado pedagógico
+            const stage = document.getElementById('sim-stage');
+            const statusBadge = document.getElementById('sim-status-badge');
+            const feedback = document.getElementById('sim-feedback-text');
+
+            if (coeffNumeric >= 1 && coeffNumeric < 10) {
+                stage.className = "p-5 sm:p-7 rounded-3xl border-2 transition-colors duration-300 bg-emerald-50/80 border-emerald-400 space-y-6";
+                statusBadge.className = "px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold bg-emerald-600 text-white shadow-sm";
+                statusBadge.textContent = "✓ Notação Científica Válida! (1 ≤ a < 10)";
+                feedback.innerHTML = `Excelente! O coeficiente <strong>${coeffDisplay}</strong> está no intervalo <strong>[1, 10[</strong> e a vírgula deslocou-se <strong>${absSteps} ${absSteps === 1 ? 'casa' : 'casas'}</strong>, dando o expoente <strong>${simExp}</strong>.`;
+            } else if (coeffNumeric >= 10) {
+                stage.className = "p-5 sm:p-7 rounded-3xl border-2 transition-colors duration-300 bg-amber-50/70 border-amber-300 space-y-6";
+                statusBadge.className = "px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold bg-amber-200 text-amber-950";
+                statusBadge.textContent = "Coeficiente ≥ 10 — Move a vírgula para a esquerda (←)";
+                feedback.innerHTML = `O coeficiente atual (<strong>${coeffDisplay}</strong>) é maior ou igual a 10. Carrega em <strong>"Mover Esquerda"</strong> para diminuir o coeficiente e aumentar o expoente.`;
+            } else {
+                stage.className = "p-5 sm:p-7 rounded-3xl border-2 transition-colors duration-300 bg-sky-50/80 border-sky-300 space-y-6";
+                statusBadge.className = "px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold bg-sky-200 text-sky-950";
+                statusBadge.textContent = "Coeficiente < 1 — Move a vírgula para a direita (→)";
+                feedback.innerHTML = `O coeficiente atual (<strong>${coeffDisplay}</strong>) é menor do que 1. Carrega em <strong>"Mover Direita"</strong> até o primeiro algarismo diferente de zero ficar antes da vírgula.`;
+            }
+
+            requestAnimationFrame(drawSimulatorArcs);
+        }
+
+        function drawSimulatorArcs() {
+            const svg = document.getElementById('sim-arcs-svg');
+            const wrapper = document.getElementById('sim-grid-wrapper');
+            if (!svg || !wrapper) return;
+
+            svg.setAttribute('width', wrapper.offsetWidth);
+            svg.innerHTML = '';
+
+            if (simOrigPos === simCurrPos) return;
+
+            const wrapRect = wrapper.getBoundingClientRect();
+            const stepDir = simCurrPos < simOrigPos ? -1 : 1; // -1 esquerda, +1 direita
+            const totalSteps = Math.abs(simCurrPos - simOrigPos);
+            const arcColor = stepDir === -1 ? '#0D9488' : '#DB2777';
+
+            for (let s = 0; s < totalSteps; s++) {
+                const fromB = simOrigPos + s * stepDir;
+                const toB = simOrigPos + (s + 1) * stepDir;
+                const elFrom = document.getElementById(`sim-slot-${fromB}`);
+                const elTo = document.getElementById(`sim-slot-${toB}`);
+                if (!elFrom || !elTo) continue;
+
+                const r1 = elFrom.getBoundingClientRect();
+                const r2 = elTo.getBoundingClientRect();
+
+                const x1 = (r1.left + r1.width / 2) - wrapRect.left;
+                const x2 = (r2.left + r2.width / 2) - wrapRect.left;
+                const yBase = 48;
+                const midX = (x1 + x2) / 2;
+                const ctrlY = 14;
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', `M ${x1} ${yBase} Q ${midX} ${ctrlY} ${x2} ${yBase}`);
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke', arcColor);
+                path.setAttribute('stroke-width', '2.2');
+                path.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(path);
+
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', midX);
+                label.setAttribute('y', 18);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('fill', arcColor);
+                label.setAttribute('font-size', '11');
+                label.setAttribute('font-weight', '800');
+                label.setAttribute('font-family', 'Inter, sans-serif');
+                label.textContent = `${s + 1}`;
+                svg.appendChild(label);
+            }
+        }
+
+        window.addEventListener('resize', drawSimulatorArcs);
+
+        // =============================================================
+        // SEPARADOR 2: CONVERSOR BIDIRECIONAL & CALCULADORA LCD
+        // =============================================================
+        function setConvMode(mode) {
+            const isDec2Sci = mode === 'dec2sci';
+            document.getElementById('conv-box-dec2sci').classList.toggle('hidden', !isDec2Sci);
+            document.getElementById('conv-box-sci2dec').classList.toggle('hidden', isDec2Sci);
+
+            document.getElementById('btn-mode-dec2sci').className = isDec2Sci
+                ? "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-sm transition"
+                : "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition";
+            document.getElementById('btn-mode-sci2dec').className = !isDec2Sci
+                ? "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-sm transition"
+                : "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition";
+        }
+
+        function setDec2SciSample(val) {
+            document.getElementById('dec2sci-input').value = val;
+            runDecToSci();
+        }
+
+        function convertDecimalExact(rawStr) {
+            const parsed = parsePositiveDecimal(rawStr);
+            if (!parsed) return null;
+            const { digits, pos } = parsed;
+            const firstNonZero = digits.search(/[1-9]/);
+            const targetPos = firstNonZero + 1;
+            const exp = pos - targetPos;
+
+            const intPart = digits[firstNonZero];
+            const decPart = digits.slice(firstNonZero + 1).replace(/0+$/, '');
+            const coeffStr = decPart.length > 0 ? `${intPart},${decPart}` : intPart;
+
+            return { coeffStr, exp, firstDigit: intPart, originalPos: pos, targetPos };
+        }
+
+        function runDecToSci() {
+            const raw = document.getElementById('dec2sci-input').value;
+            const box = document.getElementById('dec2sci-result');
+            const res = convertDecimalExact(raw);
+
+            if (!res) {
+                box.innerHTML = `<p class="text-sm font-bold text-rose-600">Introduz um número decimal positivo válido (ex: 234050 ou 0,00048).</p>`;
+                return;
+            }
+
+            const steps = Math.abs(res.exp);
+            let step2Text = '';
+            if (res.exp > 0) {
+                step2Text = `Como o número é ≥ 10, a vírgula desloca-se <strong>${steps} ${steps === 1 ? 'casa' : 'casas'} para a esquerda</strong>, logo o expoente é positivo (<strong>+${res.exp}</strong>).`;
+            } else if (res.exp < 0) {
+                step2Text = `Como o número está entre 0 e 1, a vírgula desloca-se <strong>${steps} ${steps === 1 ? 'casa' : 'casas'} para a direita</strong>, logo o expoente é negativo (<strong>${res.exp}</strong>).`;
+            } else {
+                step2Text = `O número já está no intervalo <strong>[1, 10[</strong>, por isso a vírgula não se desloca (expoente <strong>0</strong>).`;
+            }
+
+            box.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs sm:text-sm">
+                    <div class="p-3.5 rounded-xl bg-white border border-slate-200">
+                        <div class="font-extrabold text-indigo-700 mb-1">1. Identificar o coeficiente a</div>
+                        <p class="text-slate-600">Colocamos a vírgula logo após o 1.º algarismo não nulo (<strong>${res.firstDigit}</strong>): <strong class="font-mono text-slate-900">${res.coeffStr}</strong>.</p>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-white border border-slate-200">
+                        <div class="font-extrabold text-teal-700 mb-1">2. Contar casas deslocadas</div>
+                        <p class="text-slate-600">${step2Text}</p>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-indigo-600 text-white flex flex-col justify-center items-center text-center">
+                        <div class="text-[11px] uppercase tracking-wider text-indigo-200 font-bold">Resultado Final</div>
+                        <div class="font-mono text-2xl sm:text-3xl font-extrabold mt-1">${formatSciHTML(res.coeffStr, res.exp)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setSci2DecSample(c, e) {
+            document.getElementById('sci2dec-coeff').value = c;
+            document.getElementById('sci2dec-exp').value = e;
+            runSciToDec();
+        }
+
+        function runSciToDec() {
+            const rawCoeff = document.getElementById('sci2dec-coeff').value.trim().replace(/\s+/g, '').replace(',', '.');
+            const exp = parseInt(document.getElementById('sci2dec-exp').value, 10);
+            const box = document.getElementById('sci2dec-result');
+
+            if (!/^\d+(\.\d+)?$/.test(rawCoeff) || isNaN(exp) || Math.abs(exp) > 25) {
+                box.innerHTML = `<p class="text-sm font-bold text-rose-600">Verifica o coeficiente (ex: 9,5) e o expoente inteiro (entre −25 e 25).</p>`;
+                return;
+            }
+
+            const parts = rawCoeff.split('.');
+            const intStr = parts[0];
+            const decStr = parts[1] || '';
+            const allDigits = intStr + decStr;
+            const currentPos = intStr.length;
+            const newPos = currentPos + exp;
+
+            let decimalOut = '';
+            if (newPos <= 0) {
+                decimalOut = '0,' + '0'.repeat(Math.abs(newPos)) + allDigits;
+            } else if (newPos >= allDigits.length) {
+                decimalOut = allDigits + '0'.repeat(newPos - allDigits.length);
+            } else {
+                decimalOut = allDigits.slice(0, newPos) + ',' + allDigits.slice(newPos);
+            }
+
+            if (decimalOut.includes(',')) {
+                decimalOut = decimalOut.replace(/0+$/, '').replace(/,$/, '');
+            }
+            if (!decimalOut.startsWith('0,')) {
+                decimalOut = decimalOut.replace(/^0+(?=\d)/, '') || '0';
+            }
+
+            const formattedDecimal = formatPtSpaces(decimalOut);
+            const steps = Math.abs(exp);
+            let moveDesc = '';
+            if (exp > 0) {
+                moveDesc = `Expoente positivo (+${exp}): deslocamos a vírgula <strong>${steps} ${steps === 1 ? 'casa' : 'casas'} para a direita</strong>, acrescentando zeros no fim se necessário.`;
+            } else if (exp < 0) {
+                moveDesc = `Expoente negativo (${exp}): deslocamos a vírgula <strong>${steps} ${steps === 1 ? 'casa' : 'casas'} para a esquerda</strong>, acrescentando zeros à esquerda.`;
+            } else {
+                moveDesc = `Expoente zero (0): como 10<sup>0</sup> = 1, o número mantém-se igual.`;
+            }
+
+            const coeffPt = rawCoeff.replace('.', ',');
+            box.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs sm:text-sm">
+                    <div class="p-3.5 rounded-xl bg-white border border-slate-200">
+                        <div class="font-extrabold text-indigo-700 mb-1">1. Expressão inicial</div>
+                        <p class="text-slate-600">Partimos de <strong class="font-mono text-slate-900">${formatSciHTML(coeffPt, exp)}</strong>.</p>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-white border border-slate-200">
+                        <div class="font-extrabold text-amber-700 mb-1">2. Sentido da vírgula</div>
+                        <p class="text-slate-600">${moveDesc}</p>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-amber-600 text-white flex flex-col justify-center items-center text-center">
+                        <div class="text-[11px] uppercase tracking-wider text-amber-100 font-bold">Forma Decimal (Normal)</div>
+                        <div class="font-mono text-xl sm:text-2xl font-extrabold mt-1 break-all">${formattedDecimal}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function parseCalculatorOrDecimal(raw) {
+            const clean = raw.trim().replace(/\s+/g, '').replace(',', '.');
+            // Aceita notação científica de calculadora (ex: 1.34E12, 1.34e+12, 4.5e-08)
+            const sciMatch = clean.match(/^(\d+(?:\.\d+)?)[eE]([+-]?\d+)$/);
+            if (sciMatch) {
+                const mantissaParsed = parsePositiveDecimal(sciMatch[1]);
+                if (!mantissaParsed) return null;
+                const baseExp = parseInt(sciMatch[2], 10);
+                if (isNaN(baseExp) || Math.abs(baseExp) > 99) return null;
+
+                const { digits, pos } = mantissaParsed;
+                const firstNonZero = digits.search(/[1-9]/);
+                const targetPos = firstNonZero + 1;
+                const totalExp = baseExp + (pos - targetPos);
+
+                const intPart = digits[firstNonZero];
+                const decPart = digits.slice(firstNonZero + 1).replace(/0+$/, '');
+                const coeffStr = decPart.length > 0 ? `${intPart},${decPart}` : intPart;
+
+                return { coeffStr, exp: totalExp, fromCalcNotation: true };
+            }
+
+            const decRes = convertDecimalExact(clean);
+            if (!decRes) return null;
+            return { coeffStr: decRes.coeffStr, exp: decRes.exp, fromCalcNotation: false };
+        }
+
+        function setCalcPreset(val) {
+            document.getElementById('calc-custom-input').value = val;
+            updateCalcDisplay(val);
+        }
+
+        function updateCalcDisplay(raw) {
+            const clean = raw.trim();
+            document.getElementById('calc-lcd-input').textContent = clean || '0';
+
+            const res = parseCalculatorOrDecimal(clean);
+            const lcdOut = document.getElementById('calc-lcd-output');
+            const transBox = document.getElementById('calc-translation-box');
+
+            if (!res) {
+                lcdOut.textContent = 'Syntax ERROR';
+                transBox.innerHTML = `<p class="text-sm text-rose-600 font-bold">Introduz um número decimal positivo ou uma expressão de calculadora (ex: 1.34E12, 4.5e-08).</p>`;
+                return;
+            }
+
+            const dotCoeff = res.coeffStr.replace(',', '.');
+            const expSign = res.exp >= 0 ? `+${res.exp}` : `${res.exp}`;
+            const lcdDisplay = res.fromCalcNotation ? clean.replace(',', '.').toUpperCase() : `${dotCoeff}E${expSign}`;
+            lcdOut.textContent = lcdDisplay;
+
+            transBox.innerHTML = `
+                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-white border border-slate-200">
+                    <span class="text-xs font-bold text-slate-500 uppercase">No visor da calculadora</span>
+                    <span class="font-mono text-lg font-extrabold text-slate-900">${lcdDisplay}</span>
+                </div>
+                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200">
+                    <span class="text-xs font-bold text-indigo-800 uppercase">Escrita Matemática</span>
+                    <span class="font-mono text-xl font-extrabold text-indigo-700">${formatSciHTML(res.coeffStr, res.exp)}</span>
+                </div>
+            `;
+        }
+
+        // =============================================================
+        // SEPARADOR 3: DESAFIO DE ORDENAÇÃO
+        // =============================================================
+        let sortItems = [];
+        let sortSlots = [];
+
+        const sortDatasets = {
+            ficha7: [
+                { id: 'f1', label: '3,2 × 10<sup>12</sup>', val: 3.2e12, canon: '3,2 × 10<sup>12</sup>', note: 'Canónica' },
+                { id: 'f2', label: '3,19 × 10<sup>12</sup>', val: 3.19e12, canon: '3,19 × 10<sup>12</sup>', note: 'Canónica' },
+                { id: 'f3', label: '9 × 10<sup>11</sup>', val: 9e11, canon: '9 × 10<sup>11</sup>', note: 'Canónica' },
+                { id: 'f4', label: '30 × 10<sup>10</sup>', val: 30e10, canon: '3 × 10<sup>11</sup>', note: 'Atenção: 30 ≥ 10 → equivale a 3 × 10¹¹' },
+                { id: 'f5', label: '2,3 × 10<sup>13</sup>', val: 2.3e13, canon: '2,3 × 10<sup>13</sup>', note: 'Canónica' },
+                { id: 'f6', label: '4,5 × 10<sup>9</sup>', val: 4.5e9, canon: '4,5 × 10<sup>9</sup>', note: 'Canónica' },
+                { id: 'f7', label: '0,95 × 10<sup>12</sup>', val: 0.95e12, canon: '9,5 × 10<sup>11</sup>', note: 'Atenção: 0,95 < 1 → equivale a 9,5 × 10¹¹' }
+            ],
+            ano8: [
+                { id: 'a1', label: '4,2 × 10<sup>−5</sup>', val: 4.2e-5, canon: '4,2 × 10<sup>−5</sup>', note: 'Canónica' },
+                { id: 'a2', label: '8,1 × 10<sup>−6</sup>', val: 8.1e-6, canon: '8,1 × 10<sup>−6</sup>', note: 'Canónica' },
+                { id: 'a3', label: '35 × 10<sup>−6</sup>', val: 35e-6, canon: '3,5 × 10<sup>−5</sup>', note: 'Equivale a 3,5 × 10⁻⁵' },
+                { id: 'a4', label: '1,9 × 10<sup>4</sup>', val: 1.9e4, canon: '1,9 × 10<sup>4</sup>', note: 'Canónica' },
+                { id: 'a5', label: '0,2 × 10<sup>5</sup>', val: 0.2e5, canon: '2 × 10<sup>4</sup>', note: 'Equivale a 2 × 10⁴' },
+                { id: 'a6', label: '6,5 × 10<sup>−5</sup>', val: 6.5e-5, canon: '6,5 × 10<sup>−5</sup>', note: 'Canónica' },
+                { id: 'a7', label: '1,1 × 10<sup>−4</sup>', val: 1.1e-4, canon: '1,1 × 10<sup>−4</sup>', note: 'Canónica' }
+            ]
+        };
+
+        function generateRandomSortSet() {
+            const baseExp = Math.floor(Math.random() * 11) - 4;
+            const arr = [];
+            const usedVals = new Set();
+            while (arr.length < 7) {
+                const coeff = (Math.floor(Math.random() * 89) + 11) / 10;
+                const exp = baseExp + Math.floor(Math.random() * 4) - 1;
+                const val = Number((coeff * Math.pow(10, exp)).toPrecision(4));
+                if (!usedVals.has(val)) {
+                    usedVals.add(val);
+                    const cStr = coeff.toString().replace('.', ',');
+                    arr.push({
+                        id: `r${arr.length}`,
+                        label: `${cStr} × 10<sup>${exp}</sup>`,
+                        val,
+                        canon: `${cStr} × 10<sup>${exp}</sup>`,
+                        note: 'Canónica'
+                    });
+                }
+            }
+            return arr;
+        }
+
+        function loadSortLevel(level) {
+            ['ficha7', 'ano8', 'random'].forEach(k => {
+                const btn = document.getElementById(`sort-btn-${k}`);
+                if (!btn) return;
+                if (k === level) {
+                    btn.className = "px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm transition";
+                } else {
+                    btn.className = k === 'random'
+                        ? "px-3.5 py-2 rounded-xl text-xs font-bold bg-teal-600 text-white hover:bg-teal-700 shadow-sm transition"
+                        : "px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition";
+                }
+            });
+
+            const rawList = level === 'random' ? generateRandomSortSet() : sortDatasets[level];
+            sortItems = [...rawList].sort(() => Math.random() - 0.5);
+            sortSlots = new Array(sortItems.length).fill(null);
+
+            document.getElementById('sort-feedback').classList.add('hidden');
+            renderSortUI();
+        }
+
+        function placeSortItem(itemId) {
+            const emptyIdx = sortSlots.findIndex(s => s === null);
+            if (emptyIdx === -1) return;
+            const item = sortItems.find(i => i.id === itemId);
+            if (!item) return;
+            sortSlots[emptyIdx] = item;
+            renderSortUI();
+        }
+
+        function removeSortSlot(slotIdx) {
+            sortSlots[slotIdx] = null;
+            document.getElementById('sort-feedback').classList.add('hidden');
+            renderSortUI();
+        }
+
+        function swapSortSlots(idxA, idxB) {
+            if (idxB < 0 || idxB >= sortSlots.length) return;
+            const temp = sortSlots[idxA];
+            sortSlots[idxA] = sortSlots[idxB];
+            sortSlots[idxB] = temp;
+            document.getElementById('sort-feedback').classList.add('hidden');
+            renderSortUI();
+        }
+
+        function clearSortSlots() {
+            sortSlots = new Array(sortItems.length).fill(null);
+            document.getElementById('sort-feedback').classList.add('hidden');
+            renderSortUI();
+        }
+
+        function renderSortUI() {
+            const placedIds = new Set(sortSlots.filter(Boolean).map(i => i.id));
+            const bank = document.getElementById('sort-bank-list');
+            const remaining = sortItems.filter(i => !placedIds.has(i.id));
+
+            bank.innerHTML = remaining.length > 0
+                ? remaining.map(item => `
+                    <button onclick="placeSortItem('${item.id}')"
+                        class="px-4 py-2.5 rounded-xl bg-white hover:bg-indigo-600 hover:text-white border border-slate-300 font-mono text-sm font-extrabold text-slate-800 shadow-sm transition">
+                        ${item.label}
+                    </button>
+                `).join('')
+                : `<p class="text-xs text-slate-500 italic py-4">Todos os números foram colocados na lista ao lado!</p>`;
+
+            const slotsContainer = document.getElementById('sort-slots-list');
+            slotsContainer.innerHTML = sortSlots.map((item, idx) => `
+                <div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-white border ${item ? 'border-indigo-300 shadow-sm' : 'border-slate-200'}">
+                    <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-800 font-extrabold text-xs flex items-center justify-center flex-shrink-0">
+                        ${idx + 1}.º
+                    </span>
+                    <div class="flex-grow font-mono text-sm sm:text-base font-extrabold text-slate-900">
+                        ${item ? item.label : '<span class="font-sans text-xs font-normal text-slate-400">Vazio — clica num cartão à esquerda</span>'}
+                    </div>
+                    ${item ? `
+                        <div class="flex items-center gap-1">
+                            <button onclick="swapSortSlots(${idx}, ${idx - 1})" ${idx === 0 ? 'disabled' : ''}
+                                class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-30 text-xs font-bold">↑</button>
+                            <button onclick="swapSortSlots(${idx}, ${idx + 1})" ${idx === sortSlots.length - 1 ? 'disabled' : ''}
+                                class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-30 text-xs font-bold">↓</button>
+                            <button onclick="removeSortSlot(${idx})"
+                                class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold ml-1">✕</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function checkSortOrder() {
+            const fb = document.getElementById('sort-feedback');
+            fb.classList.remove('hidden');
+
+            if (sortSlots.some(s => s === null)) {
+                fb.className = "p-5 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 text-sm font-bold";
+                fb.innerHTML = "Coloca todos os 7 números nos lugares de 1.º a 7.º antes de verificar!";
+                return;
+            }
+
+            let isCorrect = true;
+            for (let i = 0; i < sortSlots.length - 1; i++) {
+                if (sortSlots[i].val > sortSlots[i + 1].val) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            const sortedCanon = [...sortItems].sort((a, b) => a.val - b.val);
+            const tableHTML = `
+                <div class="overflow-x-auto pt-2">
+                    <table class="w-full text-left text-xs sm:text-sm border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-slate-500">
+                                <th class="py-1.5 pr-3">Ordem</th>
+                                <th class="py-1.5 pr-3">Número Original</th>
+                                <th class="py-1.5 pr-3">Notação Científica Canónica</th>
+                                <th class="py-1.5">Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${sortedCanon.map((it, i) => `
+                                <tr>
+                                    <td class="py-2 pr-3 font-extrabold text-indigo-700">${i + 1}.º</td>
+                                    <td class="py-2 pr-3 font-mono font-bold">${it.label}</td>
+                                    <td class="py-2 pr-3 font-mono font-extrabold text-teal-700">${it.canon}</td>
+                                    <td class="py-2 text-slate-600">${it.note}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            if (isCorrect) {
+                fb.className = "p-5 rounded-2xl border bg-emerald-50 border-emerald-300 space-y-3";
+                fb.innerHTML = `
+                    <div class="text-emerald-900 font-extrabold text-base">
+                        ✓ Parabéns! Ordenaste todos os números corretamente por ordem crescente!
+                    </div>
+                    ${tableHTML}
+                `;
+            } else {
+                fb.className = "p-5 rounded-2xl border bg-rose-50 border-rose-300 space-y-3";
+                fb.innerHTML = `
+                    <div class="text-rose-900 font-extrabold text-base">
+                        Ainda não está na ordem certa. Consulta a comparação na forma canónica abaixo e tenta ajustar:
+                    </div>
+                    ${tableHTML}
+                `;
+            }
+        }
+
+        // =============================================================
+        // SEPARADOR 4: QUIZ INTERATIVO (7.º E 8.º ANOS)
+        // =============================================================
+        const quizQuestionsDB = {
+            '7ano': [
+                {
+                    q: "Qual dos seguintes números está escrito corretamente na forma de notação científica?",
+                    options: ["32,5 × 10<sup>5</sup>", "0,325 × 10<sup>7</sup>", "3,25 × 10<sup>6</sup>", "3,25 × 100<sup>3</sup>"],
+                    correct: 2,
+                    expl: "Na notação científica a × 10<sup>n</sup>, o coeficiente tem de cumprir 1 ≤ a < 10 e a base é 10. Apenas 3,25 × 10<sup>6</sup> cumpre ambas as regras."
+                },
+                {
+                    q: "A distância aproximada da Terra ao Sol é 150 000 000 km. Como se escreve em notação científica?",
+                    options: ["15 × 10<sup>7</sup> km", "1,5 × 10<sup>8</sup> km", "1,5 × 10<sup>7</sup> km", "0,15 × 10<sup>9</sup> km"],
+                    correct: 1,
+                    expl: "Deslocamos a vírgula 8 casas para a esquerda até ficar entre o 1 e o 5: 1,5 × 10<sup>8</sup> km."
+                },
+                {
+                    q: "A idade da Terra é aproximadamente 4 540 000 000 anos. Em notação científica é:",
+                    options: ["4,54 × 10<sup>9</sup> anos", "45,4 × 10<sup>8</sup> anos", "4,54 × 10<sup>7</sup> anos", "4,54 × 10<sup>10</sup> anos"],
+                    correct: 0,
+                    expl: "Entre a posição final (após o 4) e o fim do número existem 9 algarismos, logo 4,54 × 10<sup>9</sup> anos."
+                },
+                {
+                    q: "A população portuguesa foi estimada em 10,35 milhões de habitantes. Como se escreve em notação científica?",
+                    options: ["10,35 × 10<sup>6</sup>", "1,035 × 10<sup>6</sup>", "1,035 × 10<sup>7</sup>", "1,35 × 10<sup>7</sup>"],
+                    correct: 2,
+                    expl: "10,35 milhões = 10 350 000. Deslocando a vírgula 7 casas para a esquerda obtemos 1,035 × 10<sup>7</sup>."
+                },
+                {
+                    q: "Um ano-luz equivale aproximadamente a 9,5 × 10<sup>12</sup> km. Na forma decimal, quantos zeros tem este número?",
+                    options: ["12 zeros", "11 zeros", "13 zeros", "10 zeros"],
+                    correct: 1,
+                    expl: "Deslocando a vírgula 12 casas para a direita a partir de 9,5, o algarismo 5 ocupa 1 casa e acrescentam-se 11 zeros (9 500 000 000 000)."
+                },
+                {
+                    q: "O nosso olho pisca cerca de 4,2 × 10<sup>6</sup> vezes por ano. Qual é esse valor na forma decimal?",
+                    options: ["420 000", "4 200 000", "42 000 000", "42 000"],
+                    correct: 1,
+                    expl: "4,2 × 10<sup>6</sup> = 4,2 × 1 000 000 = 4 200 000 vezes."
+                },
+                {
+                    q: "No visor de uma calculadora científica aparece 1.34E12. Que número representa?",
+                    options: ["1,34 × 10<sup>12</sup>", "13,4 × 10<sup>12</sup>", "1,34 × 12<sup>10</sup>", "134 × 10<sup>12</sup>"],
+                    correct: 0,
+                    expl: "Na calculadora, 'E' significa '× 10 elevado a', portanto 1.34E12 corresponde a 1,34 × 10<sup>12</sup>."
+                },
+                {
+                    q: "Qual destes números é o maior?",
+                    options: ["9 × 10<sup>11</sup>", "30 × 10<sup>10</sup>", "2,3 × 10<sup>13</sup>", "3,2 × 10<sup>12</sup>"],
+                    correct: 2,
+                    expl: "Comparando os expoentes na forma canónica (11, 11, 13 e 12), o maior expoente é 13, logo 2,3 × 10<sup>13</sup> é o maior."
+                }
+            ],
+            '8ano': [
+                {
+                    q: "A massa aproximada de um átomo de hidrogénio é 0,00000000000000000000000000167 kg (26 zeros após a vírgula). Em notação científica é:",
+                    options: ["1,67 × 10<sup>−26</sup> kg", "1,67 × 10<sup>−27</sup> kg", "16,7 × 10<sup>−28</sup> kg", "1,67 × 10<sup>27</sup> kg"],
+                    correct: 1,
+                    expl: "A vírgula desloca-se 27 casas para a direita (26 zeros + o algarismo 1), logo o expoente é −27."
+                },
+                {
+                    q: "Quando escrevemos um número compreendido entre 0 e 1 em notação científica, o expoente da base 10 é sempre:",
+                    options: ["Positivo", "Zero", "Negativo", "Maior que 10"],
+                    correct: 2,
+                    expl: "Para números entre 0 e 1, deslocamos a vírgula para a direita, obtendo um expoente inteiro negativo."
+                },
+                {
+                    q: "Qual é a forma decimal de 3,05 × 10<sup>−4</sup>?",
+                    options: ["0,00305", "0,000305", "0,0000305", "30 500"],
+                    correct: 1,
+                    expl: "Deslocando a vírgula 4 casas para a esquerda a partir de 3,05 obtemos 0,000305."
+                },
+                {
+                    q: "O número 0,000089 escrito em notação científica é:",
+                    options: ["8,9 × 10<sup>−5</sup>", "8,9 × 10<sup>−4</sup>", "89 × 10<sup>−6</sup>", "0,89 × 10<sup>−4</sup>"],
+                    correct: 0,
+                    expl: "Deslocamos a vírgula 5 casas para a direita até ficar entre o 8 e o 9: 8,9 × 10<sup>−5</sup>."
+                },
+                {
+                    q: "Qual dos seguintes números é o menor?",
+                    options: ["4,5 × 10<sup>−5</sup>", "9,1 × 10<sup>−6</sup>", "1,2 × 10<sup>−4</sup>", "3,0 × 10<sup>−5</sup>"],
+                    correct: 1,
+                    expl: "Nos números negativos, −6 < −5 < −4. Como 9,1 × 10<sup>−6</sup> tem o menor expoente, é o número mais próximo de zero."
+                },
+                {
+                    q: "O número 45 × 10<sup>−7</sup> não está em notação científica. Qual é a sua escrita correta?",
+                    options: ["4,5 × 10<sup>−8</sup>", "4,5 × 10<sup>−6</sup>", "4,5 × 10<sup>−7</sup>", "0,45 × 10<sup>−5</sup>"],
+                    correct: 1,
+                    expl: "45 = 4,5 × 10<sup>1</sup>. Assim, 4,5 × 10<sup>1</sup> × 10<sup>−7</sup> = 4,5 × 10<sup>−6</sup>."
+                },
+                {
+                    q: "Se no visor da calculadora surgir 7.2E-08, qual é o número em notação científica?",
+                    options: ["7,2 × 10<sup>−8</sup>", "7,2 × 10<sup>8</sup>", "−7,2 × 10<sup>8</sup>", "0,72 × 10<sup>−8</sup>"],
+                    correct: 0,
+                    expl: "E-08 indica multiplicação por 10<sup>−8</sup>, ou seja, 7,2 × 10<sup>−8</sup>."
+                },
+                {
+                    q: "Qual é o valor de 6,4 × 10<sup>0</sup>?",
+                    options: ["0", "64", "6,4", "1"],
+                    correct: 2,
+                    expl: "Como 10<sup>0</sup> = 1, temos 6,4 × 1 = 6,4."
+                }
+            ]
+        };
+
+        let quizLevel = '7ano';
+        let quizIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        function startQuiz(lvl) {
+            quizLevel = lvl;
+            quizIndex = 0;
+            quizScore = 0;
+            quizAnswered = false;
+
+            document.getElementById('quiz-lvl-7ano').className = lvl === '7ano'
+                ? "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-sm transition"
+                : "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition";
+            document.getElementById('quiz-lvl-8ano').className = lvl === '8ano'
+                ? "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-sm transition"
+                : "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition";
+
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const list = quizQuestionsDB[quizLevel];
+            const total = list.length;
+            const stage = document.getElementById('quiz-stage');
+
+            document.getElementById('quiz-score-label').textContent = `Pontuação: ${quizScore} / ${total}`;
+
+            if (quizIndex >= total) {
+                document.getElementById('quiz-progress-label').textContent = `Concluído (${total} perguntas)`;
+                document.getElementById('quiz-progress-bar').style.width = '100%';
+
+                const pct = Math.round((quizScore / total) * 100);
+                stage.innerHTML = `
+                    <div class="bg-slate-50 p-8 rounded-3xl border border-slate-200 text-center space-y-4">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600 text-white font-display font-extrabold text-2xl shadow-md">
+                            ${pct}%
+                        </div>
+                        <h3 class="font-display text-2xl font-extrabold text-slate-900">
+                            Quiz Concluído! Acertaste ${quizScore} em ${total} perguntas.
+                        </h3>
+                        <p class="text-sm text-slate-600 max-w-md mx-auto">
+                            ${pct >= 75
+                                ? "Excelente domínio da notação científica! Podes experimentar o outro nível ou praticar no laboratório."
+                                : "Bom esforço! Revê os passos no separador Explorar e Aprender e volta a tentar."}
+                        </p>
+                        <div class="pt-2">
+                            <button onclick="startQuiz('${quizLevel}')"
+                                class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md transition">
+                                Repetir Quiz
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const qObj = list[quizIndex];
+            quizAnswered = false;
+            document.getElementById('quiz-progress-label').textContent = `Pergunta ${quizIndex + 1} de ${total}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((quizIndex + 1) / total) * 100}%`;
+
+            stage.innerHTML = `
+                <div class="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                    <h3 class="text-base sm:text-lg font-extrabold text-slate-900 leading-snug">
+                        ${quizIndex + 1}. ${qObj.q}
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="quiz-options-grid">
+                        ${qObj.options.map((opt, idx) => `
+                            <button onclick="answerQuiz(${idx})" id="quiz-opt-${idx}"
+                                class="p-4 rounded-2xl bg-white hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-400 text-left font-mono text-sm sm:text-base font-bold text-slate-800 transition shadow-sm">
+                                <span class="inline-block w-6 h-6 rounded-lg bg-slate-100 text-slate-600 font-sans text-xs font-extrabold text-center leading-6 mr-2">
+                                    ${String.fromCharCode(65 + idx)}
+                                </span>
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                <div id="quiz-expl-box" class="hidden p-5 rounded-2xl border space-y-3"></div>
+            `;
+        }
+
+        function answerQuiz(chosenIdx) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const list = quizQuestionsDB[quizLevel];
+            const qObj = list[quizIndex];
+            const isRight = chosenIdx === qObj.correct;
+            if (isRight) quizScore++;
+
+            document.getElementById('quiz-score-label').textContent = `Pontuação: ${quizScore} / ${list.length}`;
+
+            qObj.options.forEach((_, idx) => {
+                const btn = document.getElementById(`quiz-opt-${idx}`);
+                btn.disabled = true;
+                if (idx === qObj.correct) {
+                    btn.className = "p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-500 text-left font-mono text-sm sm:text-base font-extrabold text-emerald-950 shadow-sm";
+                } else if (idx === chosenIdx) {
+                    btn.className = "p-4 rounded-2xl bg-rose-50 border-2 border-rose-500 text-left font-mono text-sm sm:text-base font-bold text-rose-950";
+                } else {
+                    btn.className = "p-4 rounded-2xl bg-white border-2 border-slate-200 text-left font-mono text-sm sm:text-base font-bold text-slate-400 opacity-70";
+                }
+            });
+
+            const explBox = document.getElementById('quiz-expl-box');
+            explBox.classList.remove('hidden');
+            explBox.className = isRight
+                ? "p-5 rounded-2xl border bg-emerald-50 border-emerald-300 text-emerald-950 space-y-3"
+                : "p-5 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 space-y-3";
+
+            explBox.innerHTML = `
+                <div class="font-extrabold text-sm sm:text-base">
+                    ${isRight ? '✓ Resposta Correta!' : '✕ Resposta Incorreta'}
+                </div>
+                <p class="text-xs sm:text-sm leading-relaxed">${qObj.expl}</p>
+                <div>
+                    <button onclick="nextQuizQuestion()"
+                        class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm transition shadow-sm">
+                        ${quizIndex + 1 < list.length ? 'Próxima Pergunta →' : 'Ver Resultado Final'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function nextQuizQuestion() {
+            quizIndex++;
+            renderQuizQuestion();
+        }
+
+        // =============================================================
+        // INICIALIZAÇÃO DA APLICAÇÃO
+        // =============================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            goToLearnPage(1);
+            setPow10(0);
+            setDrillYear('7ano');
+            renderAnatomyChecker();
+            renderSimulator();
+            runDecToSci();
+            runSciToDec();
+            updateCalcDisplay('1.34E12');
+            loadSortLevel('ficha7');
+            startQuiz('7ano');
+        });
+    </script>
+</body>
+</html>
